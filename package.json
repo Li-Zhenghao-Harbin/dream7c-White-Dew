@@ -11,7 +11,8 @@
     "electron:dev": "concurrently -k \"npm run dev\" \"wait-on http://localhost:3000 && npm run start\"",
     "electron:serve": "npm run electron:dev",
     "electron:build": "npm run build && electron-builder",
-    "electron:build-and-run": "npm run electron:build && start \"\" \"./dist_electron/win-unpacked/White Dew.exe\""
+    "electron:build-and-run": "npm run electron:build && start \"\" \"./dist_electron/win-unpacked/White Dew.exe\"",
+    "clean": "rmdir /s /q dist 2>nul && rmdir /s /q dist_electron 2>nul && rmdir /s /q release 2>nul"
   },
   "dependencies": {
     "vue": "^3.4.0",

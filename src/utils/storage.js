@@ -214,20 +214,43 @@ class SimpleStorage {
      * 尝试保存到文件（如果可用）
      */
     async trySaveToFile(data) {
+        // 首先检查 electronAPI 是否存在
         if (!window.electronAPI) {
+            console.log('📝 Electron API 不可用，跳过文件保存')
             return { success: false, message: 'Electron API 不可用' }
         }
 
+        // 检查 saveData 方法是否存在
+        if (typeof window.electronAPI.saveData !== 'function') {
+            console.log('📝 Electron API.saveData 不是函数，跳过文件保存')
+            return { success: false, message: 'saveData 方法不可用' }
+        }
+
         try {
-            // 注意：这里我们只传递纯对象，确保可克隆
+            console.log('💾 尝试保存到文件系统...')
             const result = await window.electronAPI.saveData(data)
-            console.log('💾 文件保存结果:', result)
-            return result
+
+            if (result && result.success) {
+                console.log('✅ 文件保存成功:', result.path)
+                return result
+            } else {
+                console.warn('⚠️  文件保存返回失败:', result)
+                return {
+                    success: false,
+                    message: result?.message || '文件保存失败',
+                    error: result?.error
+                }
+            }
         } catch (error) {
             console.warn('⚠️  文件保存失败:', error)
-            return { success: false, error: error.message }
+            return {
+                success: false,
+                error: error.message,
+                message: '文件保存异常'
+            }
         }
     }
+
 
     /**
      * 获取存储统计信息
