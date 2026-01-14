@@ -36,6 +36,11 @@ const routes = [
             requiresAuth: false
         }
     },
+    {
+        path: '/data-management',
+        name: 'DataManagement',
+        component: () => import('./views/DataManagement.vue')
+    },
     // 重定向
     {
         path: '/home',

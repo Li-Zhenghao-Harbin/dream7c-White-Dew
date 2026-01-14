@@ -1,11 +1,13 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import dayjs from 'dayjs'
+import storage from './utils/storage'  // 导入简单存储
 
 export const useRecruitmentStore = defineStore('recruitment', () => {
     // 状态
     const progresses = ref([])
     const isLoading = ref(false)
+    const lastSaveTime = ref(null)
 
     // 行业选项
     const industryOptions = ref([
@@ -43,7 +45,6 @@ export const useRecruitmentStore = defineStore('recruitment', () => {
     const getProgressById = (id) => {
         const progress = progresses.value.find(p => p.id === id)
         if (progress) {
-            // 确保 progress 有所有必需的字段
             return {
                 ...progress,
                 tags: progress.tags || [],
@@ -59,20 +60,19 @@ export const useRecruitmentStore = defineStore('recruitment', () => {
     }
 
     // Actions
-    // 在 createProgress 函数中，确保有 tags 字段
     const createProgress = (name, description = '') => {
         const newProgress = {
             id: generateId(),
             name,
             description,
-            tags: [],  // 确保有 tags 字段
+            tags: [],
             created: dayjs().format('YYYY-MM-DD HH:mm:ss'),
             updated: dayjs().format('YYYY-MM-DD HH:mm:ss'),
             records: []
         }
 
         progresses.value.push(newProgress)
-        saveToStorage()
+        saveToStorage() // 立即保存
         return newProgress
     }
 
@@ -82,11 +82,9 @@ export const useRecruitmentStore = defineStore('recruitment', () => {
             progresses.value[index] = {
                 ...progresses.value[index],
                 ...data,
-                // 确保 tags 存在
-                tags: data.tags || progresses.value[index].tags || [],
                 updated: dayjs().format('YYYY-MM-DD HH:mm:ss')
             }
-            saveToStorage()
+            saveToStorage() // 立即保存
             return true
         }
         return false
@@ -96,7 +94,7 @@ export const useRecruitmentStore = defineStore('recruitment', () => {
         const index = progresses.value.findIndex(p => p.id === id)
         if (index !== -1) {
             progresses.value.splice(index, 1)
-            saveToStorage()
+            saveToStorage() // 立即保存
             return true
         }
         return false
@@ -118,7 +116,7 @@ export const useRecruitmentStore = defineStore('recruitment', () => {
 
             progress.records.push(newRecord)
             progress.updated = dayjs().format('YYYY-MM-DD HH:mm:ss')
-            saveToStorage()
+            saveToStorage() // 立即保存
             return newRecord
         }
         return null
@@ -135,7 +133,7 @@ export const useRecruitmentStore = defineStore('recruitment', () => {
                     updated: dayjs().format('YYYY-MM-DD HH:mm:ss')
                 }
                 progress.updated = dayjs().format('YYYY-MM-DD HH:mm:ss')
-                saveToStorage()
+                saveToStorage() // 立即保存
                 return true
             }
         }
@@ -149,32 +147,7 @@ export const useRecruitmentStore = defineStore('recruitment', () => {
             if (recordIndex !== -1) {
                 progress.records.splice(recordIndex, 1)
                 progress.updated = dayjs().format('YYYY-MM-DD HH:mm:ss')
-                saveToStorage()
-                return true
-            }
-        }
-        return false
-    }
-
-    const addStageToRecord = (progressId, recordId, stage) => {
-        const progress = getProgressById(progressId)
-        if (progress && progress.records) {
-            const record = progress.records.find(r => r.id === recordId)
-            if (record) {
-                if (!record.currentStage) {
-                    record.currentStage = []
-                }
-
-                record.currentStage.push({
-                    id: generateId(),
-                    name: stage.name,
-                    date: stage.date,
-                    notes: stage.notes || ''
-                })
-
-                record.updated = dayjs().format('YYYY-MM-DD HH:mm:ss')
-                progress.updated = dayjs().format('YYYY-MM-DD HH:mm:ss')
-                saveToStorage()
+                saveToStorage() // 立即保存
                 return true
             }
         }
@@ -189,43 +162,41 @@ export const useRecruitmentStore = defineStore('recruitment', () => {
                 lastUpdated: dayjs().format('YYYY-MM-DD HH:mm:ss')
             }
 
-            if (window.electronAPI) {
-                const result = await window.electronAPI.saveData(data)
-                if (result.success) {
-                    console.log('✅ 数据保存成功')
-                } else {
-                    console.error('❌ 数据保存失败:', result.error)
-                }
+            console.log('💾 正在保存数据...')
+            const result = await storage.save(data)
+
+            if (result.success) {
+                lastSaveTime.value = dayjs().format('YYYY-MM-DD HH:mm:ss')
+                console.log('✅ 数据保存成功')
             } else {
-                // 开发环境使用 localStorage
-                localStorage.setItem('recruitment-data', JSON.stringify(data))
-                console.log('✅ 数据保存到 localStorage')
+                console.error('❌ 数据保存失败:', result.message)
             }
+
+            return result.success
         } catch (error) {
             console.error('❌ 保存数据时出错:', error)
+            return false
         }
     }
 
     const loadFromStorage = async () => {
         isLoading.value = true
         try {
-            let data
-
-            if (window.electronAPI) {
-                data = await window.electronAPI.loadData()
-            } else {
-                // 开发环境使用 localStorage
-                const stored = localStorage.getItem('recruitment-data')
-                data = stored ? JSON.parse(stored) : null
-            }
+            console.log('📂 正在加载数据...')
+            const data = await storage.load()
 
             if (data && data.progresses) {
                 progresses.value = data.progresses
-                console.log('✅ 数据加载成功，共', data.progresses.length, '个进度')
+                console.log(`✅ 数据加载成功，共 ${data.progresses.length} 个进度`)
             } else {
                 progresses.value = []
-                console.log('📁 没有找到数据，使用空数据')
+                console.log('📭 没有找到数据，使用空数据')
             }
+
+            // 获取存储统计
+            const stats = storage.getStats()
+            console.log('📊 存储统计:', stats)
+
         } catch (error) {
             console.error('❌ 加载数据时出错:', error)
             progresses.value = []
@@ -234,15 +205,81 @@ export const useRecruitmentStore = defineStore('recruitment', () => {
         }
     }
 
+    // 手动备份数据
+    const backupData = async () => {
+        try {
+            const result = await storage.exportData()
+
+            if (result.success) {
+                // 创建下载链接
+                const a = document.createElement('a')
+                a.href = result.url
+                a.download = result.filename
+                document.body.appendChild(a)
+                a.click()
+                document.body.removeChild(a)
+                URL.revokeObjectURL(result.url)
+
+                console.log('✅ 数据备份完成')
+                return { success: true, filename: result.filename }
+            } else {
+                console.error('❌ 数据备份失败:', result.error)
+                return { success: false, error: result.error }
+            }
+        } catch (error) {
+            console.error('❌ 备份数据时出错:', error)
+            return { success: false, error: error.message }
+        }
+    }
+
+    // 从文件恢复数据
+    const restoreData = async (file) => {
+        try {
+            const result = await storage.importData(file)
+
+            if (result.success) {
+                // 重新加载数据
+                await loadFromStorage()
+                console.log('✅ 数据恢复成功')
+                return { success: true, data: result.data }
+            } else {
+                console.error('❌ 数据恢复失败:', result.message)
+                return { success: false, error: result.message }
+            }
+        } catch (error) {
+            console.error('❌ 恢复数据时出错:', error)
+            return { success: false, error: error.message }
+        }
+    }
+
+    // 清空所有数据
+    const clearAllData = async () => {
+        try {
+            progresses.value = []
+            await storage.clear()
+            console.log('✅ 数据已清空')
+            return true
+        } catch (error) {
+            console.error('❌ 清空数据失败:', error)
+            return false
+        }
+    }
+
+    // 获取存储信息
+    const getStorageInfo = () => {
+        return storage.getStats()
+    }
+
     // 生成唯一ID
     const generateId = () => {
-        return Date.now().toString(36) + Math.random().toString(36).substr(2)
+        return Date.now().toString(36) + Math.random().toString(36).substr(2, 5)
     }
 
     return {
         // 状态
         progresses,
         isLoading,
+        lastSaveTime,
 
         // 选项
         industryOptions,
@@ -260,8 +297,14 @@ export const useRecruitmentStore = defineStore('recruitment', () => {
         addRecord,
         updateRecord,
         deleteRecord,
-        addStageToRecord,
         saveToStorage,
-        loadFromStorage
+        loadFromStorage,
+        backupData,
+        restoreData,
+        clearAllData,
+        getStorageInfo,
+
+        // 工具函数（可选）
+        generateId
     }
 })

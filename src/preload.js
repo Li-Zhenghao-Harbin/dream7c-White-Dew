@@ -1,20 +1,42 @@
 const { contextBridge, ipcRenderer } = require('electron')
 
-// 将安全的 API 暴露给渲染进程
+console.log('🔧 Preload script 加载中...')
+
+// 暴露非常简单的 API 给渲染进程
 contextBridge.exposeInMainWorld('electronAPI', {
-    // 数据存储相关
-    saveData: (data) => ipcRenderer.invoke('save-data', data),
-    loadData: () => ipcRenderer.invoke('load-data'),
-    deleteData: () => ipcRenderer.invoke('delete-data'),
+    // 只有必要的 API
+    saveData: (data) => {
+        try {
+            // 确保数据是纯对象
+            const cleanData = JSON.parse(JSON.stringify(data))
+            console.log('💾 尝试保存到文件，数据大小:', JSON.stringify(cleanData).length)
+            return ipcRenderer.invoke('save-data', cleanData)
+        } catch (error) {
+            console.error('❌ 准备保存数据时出错:', error)
+            return Promise.resolve({ success: false, error: error.message })
+        }
+    },
 
-    // 应用相关
-    showContextMenu: () => ipcRenderer.invoke('show-context-menu'),
+    loadData: () => {
+        console.log('📂 尝试从文件加载数据')
+        return ipcRenderer.invoke('load-data')
+    }
+})
 
-    // 监听事件
-    on: (channel, callback) => {
-        const validChannels = ['data-saved', 'data-loaded', 'data-deleted']
-        if (validChannels.includes(channel)) {
-            ipcRenderer.on(channel, (event, ...args) => callback(...args))
+// 暴露存储测试函数
+contextBridge.exposeInMainWorld('electronUtils', {
+    testConnection: () => {
+        console.log('🔗 测试 Electron 连接')
+        return 'Electron 连接正常'
+    },
+
+    getAppInfo: () => {
+        return {
+            platform: process.platform,
+            electron: true,
+            timestamp: Date.now()
         }
     }
 })
+
+console.log('✅ Preload script 加载完成')

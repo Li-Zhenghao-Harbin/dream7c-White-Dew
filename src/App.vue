@@ -2,94 +2,102 @@
   <div id="app">
     <el-container class="app-container">
       <!-- 侧边栏导航 -->
-      <el-aside width="200px" class="sidebar">
-        <div class="logo">
-          <el-icon size="24" color="#409EFF"><Collection /></el-icon>
-          <span>White Dew</span>
-        </div>
+<!--      <el-aside width="200px" class="sidebar">-->
+<!--        <div class="logo">-->
+<!--          <el-icon size="24" color="#409EFF"><Collection /></el-icon>-->
+<!--          <span>White Dew</span>-->
+<!--        </div>-->
 
-        <el-menu
-            :default-active="activeMenu"
-            class="sidebar-menu"
-            @select="handleMenuSelect"
-        >
-          <el-menu-item index="/">
-            <el-icon><House /></el-icon>
-            <span>首页</span>
-          </el-menu-item>
+<!--        <el-menu-->
+<!--            :default-active="activeMenu"-->
+<!--            class="sidebar-menu"-->
+<!--            @select="handleMenuSelect"-->
+<!--        >-->
+<!--          <el-menu-item index="/">-->
+<!--            <el-icon><House /></el-icon>-->
+<!--            <span>首页</span>-->
+<!--          </el-menu-item>-->
 
-          <el-menu-item index="/create-progress">
-            <el-icon><Plus /></el-icon>
-            <span>新建进度</span>
-          </el-menu-item>
+<!--          <el-menu-item index="/create-progress">-->
+<!--            <el-icon><Plus /></el-icon>-->
+<!--            <span>新建进度</span>-->
+<!--          </el-menu-item>-->
 
-          <el-divider />
+<!--          <el-divider />-->
 
-          <div class="progress-list-title">
-            <span>招聘进度</span>
-            <el-icon @click="refreshData"><Refresh /></el-icon>
-          </div>
+<!--          <div class="progress-list-title">-->
+<!--            <span>招聘进度</span>-->
+<!--            <el-icon @click="refreshData"><Refresh /></el-icon>-->
+<!--          </div>-->
 
-          <el-menu-item
-              v-for="progress in store.getAllProgresses"
-              :key="progress.id"
-              :index="'/progress/' + progress.id"
-          >
-            <el-icon><Folder /></el-icon>
-            <span>{{ progress.name }}</span>
-            <el-tag size="small" type="info">
-              {{ progress.records ? progress.records.length : 0 }}
-            </el-tag>
-          </el-menu-item>
-        </el-menu>
+<!--          <el-menu-item-->
+<!--              v-for="progress in store.getAllProgresses"-->
+<!--              :key="progress.id"-->
+<!--              :index="'/progress/' + progress.id"-->
+<!--          >-->
+<!--            <el-icon><Folder /></el-icon>-->
+<!--            <span>{{ progress.name }}</span>-->
+<!--            <el-tag size="small" type="info">-->
+<!--              {{ progress.records ? progress.records.length : 0 }}-->
+<!--            </el-tag>-->
+<!--          </el-menu-item>-->
+<!--        </el-menu>-->
 
-        <div class="sidebar-footer">
-          <el-button
-              type="text"
-              size="small"
-              @click="showAbout"
-              class="about-btn"
-          >
-            <el-icon><InfoFilled /></el-icon>
-            关于
-          </el-button>
-        </div>
-      </el-aside>
+<!--        <div class="sidebar-footer">-->
+<!--          <el-button-->
+<!--              type="text"-->
+<!--              size="small"-->
+<!--              @click="showAbout"-->
+<!--              class="about-btn"-->
+<!--          >-->
+<!--            <el-icon><InfoFilled /></el-icon>-->
+<!--            关于-->
+<!--          </el-button>-->
+<!--        </div>-->
+<!--      </el-aside>-->
 
       <!-- 主内容区 -->
       <el-main class="main-content">
         <router-view />
       </el-main>
+
+
+<!--      store-->
+      <div class="data-manager-container">
+        <DataManager />
+      </div>
     </el-container>
 
     <!-- 关于对话框 -->
-    <el-dialog
-        v-model="aboutDialogVisible"
-        title="关于 White Dew"
-        width="400px"
-        center
-    >
-      <div class="about-content">
-        <h3>White Dew - 招聘信息管理</h3>
-        <p>版本: 1.0.0</p>
-        <p>一个用于管理招聘进度的桌面应用</p>
-        <p>技术栈: Electron + Vue3 + Element Plus</p>
-        <p class="copyright">© 2024 招聘信息管理系统</p>
-      </div>
+<!--    <el-dialog-->
+<!--        v-model="aboutDialogVisible"-->
+<!--        title="关于 White Dew"-->
+<!--        width="400px"-->
+<!--        center-->
+<!--    >-->
+<!--      <div class="about-content">-->
+<!--        <h3>White Dew - 招聘信息管理</h3>-->
+<!--        <p>版本: 1.0.0</p>-->
+<!--        <p>一个用于管理招聘进度的桌面应用</p>-->
+<!--        <p>技术栈: Electron + Vue3 + Element Plus</p>-->
+<!--        <p class="copyright">© 2024 招聘信息管理系统</p>-->
+<!--      </div>-->
 
-      <template #footer>
-        <el-button type="primary" @click="aboutDialogVisible = false">
-          确定
-        </el-button>
-      </template>
-    </el-dialog>
+<!--      <template #footer>-->
+<!--        <el-button type="primary" @click="aboutDialogVisible = false">-->
+<!--          确定-->
+<!--        </el-button>-->
+<!--      </template>-->
+<!--    </el-dialog>-->
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useRecruitmentStore } from './store'
+import DataManager from './components/DataManager.vue'
+import { ElMessage } from 'element-plus'
 import {
   Collection,
   House,
@@ -102,6 +110,101 @@ import {
 const router = useRouter()
 const route = useRoute()
 const store = useRecruitmentStore()
+
+// 页面加载时加载数据
+onMounted(async () => {
+  console.log('🚀 应用启动')
+  console.log('🌐 检查环境:')
+  console.log('- Electron API:', !!window.electronAPI)
+  console.log('- LocalStorage:', !!window.localStorage)
+
+  try {
+    await store.loadFromStorage()
+    console.log('✅ 数据加载完成')
+
+    // 显示欢迎消息
+    const info = store.getStorageInfo()
+    if (info.hasData) {
+      ElMessage.success(`已加载 ${info.progressCount} 个进度`)
+    }
+  } catch (error) {
+    console.error('❌ 数据加载失败:', error)
+    ElMessage.error('数据加载失败，但您可以继续使用')
+  }
+})
+
+// 自动保存机制
+let saveInterval = null
+onMounted(() => {
+  // 每30秒自动保存一次
+  saveInterval = setInterval(async () => {
+    console.log('⏰ 自动保存数据...')
+    try {
+      await store.saveToStorage()
+      console.log('✅ 自动保存成功')
+    } catch (error) {
+      console.error('❌ 自动保存失败:', error)
+    }
+  }, 30000) // 30秒
+})
+
+onUnmounted(() => {
+  if (saveInterval) {
+    clearInterval(saveInterval)
+    console.log('🛑 自动保存已停止')
+  }
+})
+
+// 监听页面可见性变化（切换标签页、最小化等）
+document.addEventListener('visibilitychange', async () => {
+  if (document.hidden) {
+    console.log('📝 页面隐藏，保存数据...')
+    try {
+      await store.saveToStorage()
+      console.log('✅ 隐藏时保存成功')
+    } catch (error) {
+      console.error('❌ 隐藏时保存失败:', error)
+    }
+  }
+})
+
+// 监听窗口关闭事件
+window.addEventListener('beforeunload', async (event) => {
+  console.log('🔚 应用即将关闭，保存数据...')
+
+  try {
+    // 尝试保存数据
+    const success = await store.saveToStorage()
+
+    if (success) {
+      console.log('✅ 关闭前保存成功')
+    } else {
+      console.warn('⚠️  关闭前保存可能失败')
+      // 不阻止关闭，数据已在 localStorage 中
+    }
+  } catch (error) {
+    console.error('❌ 关闭前保存出错:', error)
+  }
+
+  // 允许窗口正常关闭
+  // 注意：不要调用 event.preventDefault()，否则会阻止关闭
+})
+
+// 添加调试命令到全局
+window.debugStore = () => {
+  console.log('🔍 调试存储状态:')
+  console.log('- 进度数量:', store.getAllProgresses.length)
+  console.log('- 加载中:', store.isLoading)
+  console.log('- 最后保存:', store.lastSaveTime)
+
+  const stats = store.getStorageInfo()
+  console.log('- 存储统计:', stats)
+
+  // 手动保存测试
+  store.saveToStorage().then(success => {
+    console.log('- 手动保存结果:', success ? '成功' : '失败')
+  })
+}
 
 const aboutDialogVisible = ref(false)
 
@@ -126,12 +229,20 @@ const showAbout = () => {
 }
 
 // 页面加载时加载数据
-onMounted(() => {
-  store.loadFromStorage()
-})
+// onMounted(() => {
+//   store.loadFromStorage()
+// })
+
 </script>
 
 <style scoped>
+.data-manager-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+}
+
 .app-container {
   height: 100vh;
   overflow: hidden;
