@@ -1,43 +1,52 @@
 {
   "name": "white_dew",
-  "version": "0.1.0",
-  "private": true,
+  "version": "1.0.0",
+  "description": "招聘信息管理应用",
+  "main": "src/main.js",
   "scripts": {
-    "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "start": "electron .",
+    "electron:dev": "concurrently -k \"npm run dev\" \"wait-on http://localhost:3000 && npm run start\"",
+    "electron:serve": "npm run electron:dev",
+    "electron:build": "npm run build && electron-builder",
+    "electron:build-and-run": "npm run electron:build && start \"\" \"./dist_electron/win-unpacked/White Dew.exe\""
   },
   "dependencies": {
-    "core-js": "^3.8.3",
-    "vue": "^3.2.13"
+    "vue": "^3.4.0",
+    "vue-router": "^4.2.0",
+    "pinia": "^2.1.0",
+    "element-plus": "^2.4.0",
+    "@element-plus/icons-vue": "^2.3.0",
+    "dayjs": "^1.11.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.12.16",
-    "@babel/eslint-parser": "^7.12.16",
-    "@vue/cli-plugin-babel": "~5.0.0",
-    "@vue/cli-plugin-eslint": "~5.0.0",
-    "@vue/cli-service": "~5.0.0",
-    "eslint": "^7.32.0",
-    "eslint-plugin-vue": "^8.0.3"
+    "@vitejs/plugin-vue": "^4.0.0",
+    "vite": "^4.0.0",
+    "electron": "^25.0.0",
+    "electron-builder": "^24.0.0",
+    "concurrently": "^8.0.0",
+    "wait-on": "^7.0.0"
   },
-  "eslintConfig": {
-    "root": true,
-    "env": {
-      "node": true
+  "build": {
+    "appId": "com.whitedew.app",
+    "productName": "White Dew",
+    "directories": {
+      "output": "dist_electron"
     },
-    "extends": [
-      "plugin:vue/vue3-essential",
-      "eslint:recommended"
+    "files": [
+      "dist/**/*",
+      "src/**/*",
+      "!**/node_modules/*"
     ],
-    "parserOptions": {
-      "parser": "@babel/eslint-parser"
+    "win": {
+      "target": "nsis",
+      "icon": "build/icon.ico"
     },
-    "rules": {}
-  },
-  "browserslist": [
-    "> 1%",
-    "last 2 versions",
-    "not dead",
-    "not ie 11"
-  ]
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  }
 }
