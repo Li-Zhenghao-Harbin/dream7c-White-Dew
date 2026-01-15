@@ -67,7 +67,7 @@
         </el-col>
       </el-row>
 
-      <el-form-item label="当前阶段">
+      <el-form-item label="流程">
         <div class="stages-section">
           <div v-for="(stage, index) in form.currentStage" :key="index" class="stage-item">
             <el-input
@@ -109,7 +109,7 @@
         </el-col>
         <el-col :span="12">
           <el-form-item label="官网">
-            <el-input v-model="form.website" placeholder="输入官网或投递页面网址" />
+            <el-input v-model="form.website" placeholder="输入官网或投递页面网址，而后通过点击公司名跳转" />
           </el-form-item>
         </el-col>
       </el-row>

@@ -101,7 +101,7 @@
           </el-statistic>
         </el-col>
         <el-col :span="6">
-          <el-statistic title="已拒绝" :value="rejectedCount">
+          <el-statistic title="已失败" :value="rejectedCount">
             <template #prefix>
               <el-icon style="color: red;"><CloseBold /></el-icon>
             </template>
@@ -133,7 +133,14 @@
           size="large"
           empty-text="暂无记录"
       >
-        <el-table-column prop="companyName" label="公司名称" width="150" fixed />
+<!--        <el-table-column prop="companyName" label="公司名称" width="150" fixed />-->
+        <el-table-column prop="companyName" label="公司名称" width="150" fixed>
+          <template #default="scope">
+            <a v-if="scope.row.website" :href="scope.row.website" target="_blank" @click.stop>
+              {{ scope.row.companyName }}
+            </a>
+          </template>
+        </el-table-column>
         <el-table-column prop="industry" label="行业" width="120">
           <template #default="scope">
             <el-tag :type="getIndustryTagType(scope.row.industry)">
@@ -145,19 +152,19 @@
         <el-table-column prop="position" label="岗位" width="150" />
         <el-table-column prop="applyDate" label="投递日期" width="120" sortable />
 
-        <el-table-column prop="currentStage" label="当前阶段" min-width="200">
+        <el-table-column prop="currentStage" label="流程" min-width="200">
           <template #default="scope">
-            <div v-if="scope.row.currentStage && scope.row.currentStage.length > 0" class="stages" style="cursor: pointer;" @click.stop="viewStage">
+            <div v-if="scope.row.currentStage && scope.row.currentStage.length > 0" class="stages" style="cursor: pointer;" @click.stop="viewStage(scope.row.currentStage)">
               <el-tag
-                  v-for="stage in scope.row.currentStage.slice(0, 2)"
+                  v-for="stage in scope.row.currentStage.slice(0, 3)"
                   :key="stage.id"
                   size="small"
                   class="stage-tag"
               >
-                {{ stage.name }} {{ stage.date }}
+                <b>{{ stage.name }}</b> {{ stage.date }}
               </el-tag>
-              <el-tag v-if="scope.row.currentStage.length > 2" size="small">
-                +{{ scope.row.currentStage.length - 2 }}
+              <el-tag v-if="scope.row.currentStage.length > 3" size="small">
+                +{{ scope.row.currentStage.length - 3 }}
               </el-tag>
             </div>
             <span v-else class="no-stages">-</span>
@@ -174,14 +181,14 @@
 
         <el-table-column prop="salary" label="待遇" width="120" />
         <el-table-column prop="note" label="备注" width="150" show-overflow-tooltip />
-        <el-table-column prop="website" label="官网" width="150">
-          <template #default="scope">
-            <a v-if="scope.row.website" :href="scope.row.website" target="_blank" @click.stop>
-              访问
-            </a>
-            <span v-else>-</span>
-          </template>
-        </el-table-column>
+<!--        <el-table-column prop="website" label="官网" width="150">-->
+<!--          <template #default="scope">-->
+<!--            <a v-if="scope.row.website" :href="scope.row.website" target="_blank" @click.stop>-->
+<!--              访问-->
+<!--            </a>-->
+<!--            <span v-else>-</span>-->
+<!--          </template>-->
+<!--        </el-table-column>-->
 
         <el-table-column label="操作" width="150" fixed="right">
           <template #default="scope">
@@ -217,6 +224,19 @@
           :record="currentRecord"
           @submit="handleRecordSubmit"
           @cancel="showAddDialog = false"
+      />
+    </el-dialog>
+
+    <!-- 查看流程对话框 -->
+    <el-dialog
+        v-model="showStageDialog"
+        title="查看流程"
+        width="800px"
+    >
+      <StageForm
+          v-if="showStageDialog"
+          :stage="currentStage"
+          @submit="handleStageSubmit"
       />
     </el-dialog>
 
@@ -279,6 +299,7 @@ import { useRouter, useRoute } from 'vue-router'
 import { useRecruitmentStore } from '../store'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import RecordForm from '../components/RecordForm.vue'
+import StageForm from "@/components/StageForm.vue";
 import {
   ArrowLeft,
   Folder,
@@ -306,6 +327,9 @@ const showEditProgressDialog = ref(false)
 const isEditing = ref(false)
 const currentRecord = ref(null)
 const editProgressFormRef = ref()
+
+const showStageDialog = ref(false)
+const currentStage = ref(null)
 
 // 编辑进度表单
 const editProgressForm = ref({
@@ -345,11 +369,12 @@ const inProgressCount = computed(() => {
 })
 
 const passedCount = computed(() => {
-  return records.value.filter(record => record.result === 'offer').length
+  const passedResults = ['offer', '已拒绝']
+  return records.value.filter(record => passedResults.includes(record.result)).length
 })
 
 const rejectedCount = computed(() => {
-  const rejectedResults = ['简历挂', '测评挂', '笔试挂', '面试挂', '已拒绝']
+  const rejectedResults = ['简历挂', '测评挂', '笔试挂', '面试挂']
   return records.value.filter(record => rejectedResults.includes(record.result)).length
 })
 
@@ -516,10 +541,6 @@ const deleteRecord = (recordId) => {
   })
 }
 
-const viewStage = () => {
-
-}
-
 const handleRecordSubmit = (recordData) => {
   if (isEditing.value && currentRecord.value) {
     // 更新记录
@@ -534,6 +555,16 @@ const handleRecordSubmit = (recordData) => {
   showAddDialog.value = false
   isEditing.value = false
   currentRecord.value = null
+}
+
+
+const viewStage = (stageData) => {
+  currentStage.value = stageData
+  showStageDialog.value = true
+}
+
+const handleStageSubmit = () => {
+  showStageDialog.value = false
 }
 </script>
 
