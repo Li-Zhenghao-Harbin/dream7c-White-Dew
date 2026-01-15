@@ -27,10 +27,10 @@
               <span>创建时间: {{ progress?.created || '' }}</span>
             </div>
 
-            <div class="meta-item">
-              <el-icon><Refresh /></el-icon>
-              <span>更新时间: {{ progress?.updated || '' }}</span>
-            </div>
+<!--            <div class="meta-item">-->
+<!--              <el-icon><Refresh /></el-icon>-->
+<!--              <span>更新时间: {{ progress?.updated || '' }}</span>-->
+<!--            </div>-->
 
             <!-- 标签部分，确保 progress.tags 存在 -->
             <div class="tags-section" v-if="progress?.tags && progress.tags.length > 0">
@@ -44,9 +44,9 @@
                 {{ tag }}
               </el-tag>
             </div>
-            <div class="tags-section" v-else>
-              <el-tag size="small" type="info">无标签</el-tag>
-            </div>
+<!--            <div class="tags-section" v-else>-->
+<!--              <el-tag size="small" type="info">无标签</el-tag>-->
+<!--            </div>-->
           </div>
         </div>
 
@@ -96,14 +96,14 @@
         <el-col :span="6">
           <el-statistic title="已通过" :value="passedCount">
             <template #prefix>
-              <el-icon><SuccessFilled /></el-icon>
+              <el-icon style="color: green;"><SuccessFilled /></el-icon>
             </template>
           </el-statistic>
         </el-col>
         <el-col :span="6">
           <el-statistic title="已拒绝" :value="rejectedCount">
             <template #prefix>
-              <el-icon><CloseBold /></el-icon>
+              <el-icon style="color: red;"><CloseBold /></el-icon>
             </template>
           </el-statistic>
         </el-col>
@@ -131,9 +131,9 @@
           stripe
           border
           size="large"
-          empty-text="暂无记录，点击上方按钮添加"
+          empty-text="暂无记录"
       >
-        <el-table-column prop="companyName" label="公司名称" width="180" fixed />
+        <el-table-column prop="companyName" label="公司名称" width="150" fixed />
         <el-table-column prop="industry" label="行业" width="120">
           <template #default="scope">
             <el-tag :type="getIndustryTagType(scope.row.industry)">
@@ -145,9 +145,9 @@
         <el-table-column prop="position" label="岗位" width="150" />
         <el-table-column prop="applyDate" label="投递日期" width="120" sortable />
 
-        <el-table-column prop="currentStage" label="当前进度" min-width="200">
+        <el-table-column prop="currentStage" label="当前阶段" min-width="200">
           <template #default="scope">
-            <div v-if="scope.row.currentStage && scope.row.currentStage.length > 0" class="stages">
+            <div v-if="scope.row.currentStage && scope.row.currentStage.length > 0" class="stages" style="cursor: pointer;" @click.stop="viewStage">
               <el-tag
                   v-for="stage in scope.row.currentStage.slice(0, 2)"
                   :key="stage.id"
@@ -183,7 +183,7 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="操作" width="120" fixed="right">
+        <el-table-column label="操作" width="150" fixed="right">
           <template #default="scope">
             <div class="action-buttons">
               <el-button
@@ -349,7 +349,7 @@ const passedCount = computed(() => {
 })
 
 const rejectedCount = computed(() => {
-  const rejectedResults = ['简历挂', '测评挂', '笔试挂', '一面挂', '二面挂', '三面挂', 'HR面挂', '已拒绝']
+  const rejectedResults = ['简历挂', '测评挂', '笔试挂', '面试挂', '已拒绝']
   return records.value.filter(record => rejectedResults.includes(record.result)).length
 })
 
@@ -385,8 +385,8 @@ const refreshData = () => {
 const getIndustryTagType = (industry) => {
   const typeMap = {
     '互联网': 'primary',
-    '金融': 'success',
-    '制造业': 'warning',
+    '制造业': 'success',
+    '金融': 'warning',
     '医疗': 'danger',
     '教育': 'info'
   }
@@ -401,10 +401,7 @@ const getResultTagType = (result) => {
     '简历挂': 'danger',
     '测评挂': 'danger',
     '笔试挂': 'danger',
-    '一面挂': 'danger',
-    '二面挂': 'danger',
-    '三面挂': 'danger',
-    'HR面挂': 'danger',
+    '面试挂': 'danger',
     '未参加': 'info'
   }
   return typeMap[result] || 'info'
@@ -519,6 +516,10 @@ const deleteRecord = (recordId) => {
   })
 }
 
+const viewStage = () => {
+
+}
+
 const handleRecordSubmit = (recordData) => {
   if (isEditing.value && currentRecord.value) {
     // 更新记录
@@ -544,7 +545,7 @@ const handleRecordSubmit = (recordData) => {
 }
 
 .detail-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background-color: #88abda;
   color: white;
   padding: 24px;
 }

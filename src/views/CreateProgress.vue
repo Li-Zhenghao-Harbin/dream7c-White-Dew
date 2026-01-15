@@ -5,7 +5,7 @@
         <el-icon><ArrowLeft /></el-icon>
         返回
       </el-button>
-      <h1>新建招聘进度</h1>
+      <h1>新建进度</h1>
     </div>
 
     <div class="create-content">
@@ -21,10 +21,8 @@
           <el-form-item label="进度名称" prop="name">
             <el-input
                 v-model="form.name"
-                placeholder="例如：2025秋招、2026春招、暑期实习等"
                 :prefix-icon="Collection"
             />
-            <div class="form-tip">建议使用明确的时间标识，便于管理</div>
           </el-form-item>
 
           <el-form-item label="进度描述">
@@ -32,10 +30,8 @@
                 v-model="form.description"
                 type="textarea"
                 :rows="4"
-                placeholder="可添加一些描述信息，如：本次招聘的目标、重点关注的行业等"
                 resize="none"
             />
-            <div class="form-tip">可选，用于记录本次招聘的详细信息</div>
           </el-form-item>
 
           <el-form-item label="预设标签">
@@ -68,38 +64,38 @@
             </el-select>
           </el-form-item>
 
-          <el-form-item label="目标设置">
-            <el-row :gutter="20">
-              <el-col :span="12">
-                <div class="target-item">
-                  <label>目标记录数</label>
-                  <el-input-number
-                      v-model="form.targetCount"
-                      :min="0"
-                      :max="1000"
-                      placeholder="例如：50"
-                      style="width: 100%;"
-                  />
-                </div>
-              </el-col>
-              <el-col :span="12">
-                <div class="target-item">
-                  <label>期望 Offer 数</label>
-                  <el-input-number
-                      v-model="form.targetOffers"
-                      :min="0"
-                      :max="100"
-                      placeholder="例如：3"
-                      style="width: 100%;"
-                  />
-                </div>
-              </el-col>
-            </el-row>
-          </el-form-item>
+<!--          <el-form-item label="目标设置">-->
+<!--            <el-row :gutter="20">-->
+<!--              <el-col :span="12">-->
+<!--                <div class="target-item">-->
+<!--                  <label>目标记录数</label>-->
+<!--                  <el-input-number-->
+<!--                      v-model="form.targetCount"-->
+<!--                      :min="0"-->
+<!--                      :max="1000"-->
+<!--                      placeholder="例如：50"-->
+<!--                      style="width: 100%;"-->
+<!--                  />-->
+<!--                </div>-->
+<!--              </el-col>-->
+<!--              <el-col :span="12">-->
+<!--                <div class="target-item">-->
+<!--                  <label>期望 Offer 数</label>-->
+<!--                  <el-input-number-->
+<!--                      v-model="form.targetOffers"-->
+<!--                      :min="0"-->
+<!--                      :max="100"-->
+<!--                      placeholder="例如：3"-->
+<!--                      style="width: 100%;"-->
+<!--                  />-->
+<!--                </div>-->
+<!--              </el-col>-->
+<!--            </el-row>-->
+<!--          </el-form-item>-->
 
-          <el-form-item>
+<!--          <el-form-item>-->
             <div class="form-actions">
-              <el-button @click="goBack" size="large">取消</el-button>
+<!--              <el-button @click="goBack" size="large">取消</el-button>-->
               <el-button
                   type="primary"
                   @click="handleSubmit"
@@ -109,7 +105,7 @@
                 创建进度
               </el-button>
             </div>
-          </el-form-item>
+<!--          </el-form-item>-->
         </el-form>
       </el-card>
 

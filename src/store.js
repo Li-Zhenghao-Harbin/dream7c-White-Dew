@@ -12,31 +12,26 @@ export const useRecruitmentStore = defineStore('recruitment', () => {
     // 行业选项
     const industryOptions = ref([
         '互联网',
-        '金融',
         '制造业',
+        '软件',
+        '金融',
         '医疗',
         '教育',
-        '零售',
-        '房地产',
         '能源',
-        '交通运输',
-        '娱乐媒体',
+        '游戏',
         '其他'
     ])
 
     // 结果选项
     const resultOptions = ref([
+        '进行中',
         '未参加',
         '简历挂',
         '测评挂',
         '笔试挂',
-        '一面挂',
-        '二面挂',
-        '三面挂',
-        'HR面挂',
+        '面试挂',
         'offer',
-        '已拒绝',
-        '进行中'
+        '已拒绝'
     ])
 
     // Getter

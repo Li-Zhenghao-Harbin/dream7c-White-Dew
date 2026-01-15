@@ -1,34 +1,29 @@
 <template>
   <div class="home">
-    <div class="home-header">
-      <h1>招聘进度管理</h1>
-      <p class="subtitle">管理您的招聘进度，追踪每个机会</p>
-    </div>
+<!--    <div class="home-header">-->
+<!--      <h1>柒幻 白露</h1>-->
+<!--    </div>-->
 
     <div class="home-content">
-      <!-- 快捷操作 -->
       <div class="quick-actions">
         <el-card class="action-card" shadow="hover" @click="goToCreateProgress">
           <div class="action-content">
             <el-icon size="48" color="#409EFF"><Plus /></el-icon>
-            <h3>新建招聘进度</h3>
-            <p>创建一个新的招聘进度，如2025秋招</p>
+            <h3>新建进度</h3>
           </div>
         </el-card>
 
         <el-card class="action-card" shadow="hover" @click="refreshData">
           <div class="action-content">
             <el-icon size="48" color="#67C23A"><Refresh /></el-icon>
-            <h3>刷新数据</h3>
-            <p>重新加载所有数据</p>
+            <h3>刷新</h3>
           </div>
         </el-card>
 
         <el-card class="action-card" shadow="hover" @click="exportData">
           <div class="action-content">
             <el-icon size="48" color="#E6A23C"><Download /></el-icon>
-            <h3>导出数据</h3>
-            <p>导出所有招聘数据</p>
+            <h3>导出</h3>
           </div>
         </el-card>
       </div>
@@ -36,7 +31,7 @@
       <!-- 进度列表 -->
       <div class="progress-section">
         <div class="section-header">
-          <h2>所有招聘进度</h2>
+          <h2>所有进度</h2>
           <el-button
               type="text"
               @click="refreshData"
@@ -53,7 +48,7 @@
         </div>
 
         <div v-else-if="store.getAllProgresses.length === 0" class="empty-state">
-          <el-empty description="暂无招聘进度">
+          <el-empty description="暂无进度">
             <el-button type="primary" @click="goToCreateProgress">
               创建第一个进度
             </el-button>
@@ -98,7 +93,21 @@
             <div class="card-content">
               <p class="description">{{ progress.description || '暂无描述' }}</p>
 
-              <div class="progress-stats">
+              <!-- 标签部分，确保 progress.tags 存在 -->
+              <div class="tags-section" v-if="progress?.tags && progress.tags.length > 0">
+                <el-tag
+                    v-for="tag in progress.tags"
+                    :key="tag"
+                    size="small"
+                    type="info"
+                    class="tag-item"
+                >
+                  {{ tag }}
+                </el-tag>
+              </div>
+
+<!--              <div class="progress-stats">-->
+              <div style="clear: both;"><br/>
                 <div class="stat-item">
                   <el-icon><Document /></el-icon>
                   <span>{{ progress.records ? progress.records.length : 0 }} 条记录</span>
@@ -109,19 +118,19 @@
                 </div>
               </div>
 
-              <div v-if="progress.records && progress.records.length > 0" class="recent-records">
-                <p class="recent-title">最近记录:</p>
-                <div
-                    v-for="record in progress.records.slice(0, 3)"
-                    :key="record.id"
-                    class="record-item"
-                >
-                  <span class="company">{{ record.companyName }}</span>
-                  <el-tag :type="getResultTagType(record.result)" size="small">
-                    {{ record.result }}
-                  </el-tag>
-                </div>
-              </div>
+<!--              <div v-if="progress.records && progress.records.length > 0" class="recent-records">-->
+<!--                <p class="recent-title">最近记录:</p>-->
+<!--                <div-->
+<!--                    v-for="record in progress.records.slice(0, 3)"-->
+<!--                    :key="record.id"-->
+<!--                    class="record-item"-->
+<!--                >-->
+<!--                  <span class="company">{{ record.companyName }}</span>-->
+<!--                  <el-tag :type="getResultTagType(record.result)" size="small">-->
+<!--                    {{ record.result }}-->
+<!--                  </el-tag>-->
+<!--                </div>-->
+<!--              </div>-->
             </div>
 
             <template #footer>
@@ -207,6 +216,7 @@ const refreshData = () => {
 // 导出数据
 const exportData = () => {
   const data = store.getAllProgresses
+
   const jsonStr = JSON.stringify(data, null, 2)
   const blob = new Blob([jsonStr], { type: 'application/json' })
   const url = URL.createObjectURL(blob)
@@ -268,16 +278,13 @@ const deleteProgress = (progressId) => {
 // 获取结果标签类型
 const getResultTagType = (result) => {
   const typeMap = {
-    'offer': 'success',
     '进行中': 'primary',
+    'offer': 'success',
     '已拒绝': 'warning',
     '简历挂': 'danger',
     '测评挂': 'danger',
     '笔试挂': 'danger',
-    '一面挂': 'danger',
-    '二面挂': 'danger',
-    '三面挂': 'danger',
-    'HR面挂': 'danger',
+    '面试挂': 'danger',
     '未参加': 'info'
   }
   return typeMap[result] || 'info'

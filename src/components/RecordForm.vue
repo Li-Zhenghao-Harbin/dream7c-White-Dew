@@ -10,12 +10,12 @@
       <el-row :gutter="20">
         <el-col :span="12">
           <el-form-item label="公司名称" prop="companyName">
-            <el-input v-model="form.companyName" placeholder="请输入公司全称" />
+            <el-input v-model="form.companyName" placeholder="输入公司名称" />
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="行业" prop="industry">
-            <el-select v-model="form.industry" placeholder="请选择行业" style="width: 100%;">
+            <el-select v-model="form.industry" placeholder="选择行业" style="width: 100%;">
               <el-option
                   v-for="item in industryOptions"
                   :key="item"
@@ -30,12 +30,12 @@
       <el-row :gutter="20">
         <el-col :span="12">
           <el-form-item label="城市" prop="city">
-            <el-input v-model="form.city" placeholder="请输入城市" />
+            <el-input v-model="form.city" placeholder="输入城市" />
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="岗位" prop="position">
-            <el-input v-model="form.position" placeholder="请输入岗位名称" />
+            <el-input v-model="form.position" placeholder="输入岗位名称" />
           </el-form-item>
         </el-col>
       </el-row>
@@ -55,7 +55,7 @@
         </el-col>
         <el-col :span="12">
           <el-form-item label="结果" prop="result">
-            <el-select v-model="form.result" placeholder="请选择结果" style="width: 100%;">
+            <el-select v-model="form.result" placeholder="选择结果" style="width: 100%;">
               <el-option
                   v-for="item in resultOptions"
                   :key="item"
@@ -67,7 +67,7 @@
         </el-col>
       </el-row>
 
-      <el-form-item label="当前进度">
+      <el-form-item label="当前阶段">
         <div class="stages-section">
           <div v-for="(stage, index) in form.currentStage" :key="index" class="stage-item">
             <el-input
@@ -104,12 +104,12 @@
       <el-row :gutter="20">
         <el-col :span="12">
           <el-form-item label="待遇">
-            <el-input v-model="form.salary" placeholder="如：20k*15" />
+            <el-input v-model="form.salary" placeholder="输入待遇" />
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="官网">
-            <el-input v-model="form.website" placeholder="https://" />
+            <el-input v-model="form.website" placeholder="输入官网或投递页面网址" />
           </el-form-item>
         </el-col>
       </el-row>
@@ -119,7 +119,7 @@
             v-model="form.note"
             type="textarea"
             :rows="3"
-            placeholder="可填写面试感受、注意事项等"
+            placeholder="输入总结、注意事项等"
         />
       </el-form-item>
     </el-form>
@@ -160,7 +160,7 @@ const form = reactive({
   position: '',
   applyDate: '',
   currentStage: [],
-  result: '未参加',
+  result: '进行中',
   salary: '',
   note: '',
   website: ''
