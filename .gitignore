@@ -24,3 +24,6 @@ pnpm-debug.log*
 
 #Electron-builder output
 /dist_electron
+
+# dream7c project
+/logo
