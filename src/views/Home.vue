@@ -13,19 +13,25 @@
           </div>
         </el-card>
 
-        <el-card class="action-card" shadow="hover" @click="refreshData">
-          <div class="action-content">
-            <el-icon size="48" color="#67C23A"><Refresh /></el-icon>
-            <h3>刷新</h3>
-          </div>
-        </el-card>
-
-        <el-card class="action-card" shadow="hover" @click="exportData">
+        <el-card class="action-card" shadow="hover" @click="openDataManager">
           <div class="action-content">
             <el-icon size="48" color="#E6A23C"><Download /></el-icon>
-            <h3>导出</h3>
+            <h3>数据管理</h3>
           </div>
         </el-card>
+<!--        <el-card class="action-card" shadow="hover" @click="refreshData">-->
+<!--          <div class="action-content">-->
+<!--            <el-icon size="48" color="#67C23A"><Refresh /></el-icon>-->
+<!--            <h3>刷新</h3>-->
+<!--          </div>-->
+<!--        </el-card>-->
+
+<!--        <el-card class="action-card" shadow="hover" @click="exportData">-->
+<!--          <div class="action-content">-->
+<!--            <el-icon size="48" color="#E6A23C"><Download /></el-icon>-->
+<!--            <h3>导出</h3>-->
+<!--          </div>-->
+<!--        </el-card>-->
       </div>
 
       <!-- 进度列表 -->
@@ -214,21 +220,21 @@ const refreshData = () => {
 }
 
 // 导出数据
-const exportData = () => {
-  const data = store.getAllProgresses
-
-  const jsonStr = JSON.stringify(data, null, 2)
-  const blob = new Blob([jsonStr], { type: 'application/json' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = `招聘数据_${new Date().toISOString().split('T')[0]}.json`
-  document.body.appendChild(a)
-  a.click()
-  document.body.removeChild(a)
-  URL.revokeObjectURL(url)
-  ElMessage.success('数据导出成功')
-}
+// const exportData = () => {
+//   const data = store.getAllProgresses
+//
+//   const jsonStr = JSON.stringify(data, null, 2)
+//   const blob = new Blob([jsonStr], { type: 'application/json' })
+//   const url = URL.createObjectURL(blob)
+//   const a = document.createElement('a')
+//   a.href = url
+//   a.download = `导出数据_${new Date().toISOString().split('T')[0]}.json`
+//   document.body.appendChild(a)
+//   a.click()
+//   document.body.removeChild(a)
+//   URL.revokeObjectURL(url)
+//   ElMessage.success('数据导出成功')
+// }
 
 // 编辑进度
 const editProgress = (progress) => {
