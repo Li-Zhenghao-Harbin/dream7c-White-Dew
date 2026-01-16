@@ -12,13 +12,19 @@
             <h3>新建进度</h3>
           </div>
         </el-card>
-
         <el-card class="action-card" shadow="hover" @click="openDataManager">
           <div class="action-content">
-            <el-icon size="48" color="#E6A23C"><Download /></el-icon>
+            <el-icon size="48" color="#E6A23C"><Setting /></el-icon>
             <h3>数据管理</h3>
+            <p>备份、导入、清空数据</p>
           </div>
         </el-card>
+<!--        <el-card class="action-card" shadow="hover" @click="openDataManager">-->
+<!--          <div class="action-content">-->
+<!--            <el-icon size="48" color="#E6A23C"><Download /></el-icon>-->
+<!--            <h3>数据管理</h3>-->
+<!--          </div>-->
+<!--        </el-card>-->
 <!--        <el-card class="action-card" shadow="hover" @click="refreshData">-->
 <!--          <div class="action-content">-->
 <!--            <el-icon size="48" color="#67C23A"><Refresh /></el-icon>-->
@@ -174,6 +180,8 @@
         <el-button type="primary" @click="saveEditProgress">保存</el-button>
       </template>
     </el-dialog>
+
+    <DataManager v-model="dataManagerVisible"/>
   </div>
 </template>
 
@@ -181,6 +189,7 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useRecruitmentStore } from '../store'
+import DataManager from '../components/DataManager.vue'
 import {
   Plus,
   Refresh,
@@ -197,11 +206,17 @@ const router = useRouter()
 const store = useRecruitmentStore()
 
 const editDialogVisible = ref(false)
+const dataManagerVisible = ref(false)
 const editForm = ref({
   id: '',
   name: '',
   description: ''
 })
+
+// 打开数据管理器
+const openDataManager = () => {
+  dataManagerVisible.value = true
+}
 
 // 导航到创建进度页面
 const goToCreateProgress = () => {

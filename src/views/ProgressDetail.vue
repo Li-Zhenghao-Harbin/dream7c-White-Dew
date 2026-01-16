@@ -63,9 +63,9 @@
                 <el-dropdown-item command="edit-progress">
                   <el-icon><Edit /></el-icon>编辑进度
                 </el-dropdown-item>
-                <el-dropdown-item command="export-data">
-                  <el-icon><Download /></el-icon>导出数据
-                </el-dropdown-item>
+<!--                <el-dropdown-item command="export-data">-->
+<!--                  <el-icon><Download /></el-icon>导出数据-->
+<!--                </el-dropdown-item>-->
                 <el-dropdown-item divided command="delete-progress">
                   <el-icon><Delete /></el-icon>删除进度
                 </el-dropdown-item>
@@ -448,9 +448,9 @@ const handleAction = (command) => {
     case 'edit-progress':
       editProgress()
       break
-    case 'export-data':
-      exportData()
-      break
+    // case 'export-data':
+    //   exportData()
+    //   break
     case 'delete-progress':
       deleteProgress()
       break
@@ -480,27 +480,27 @@ const saveProgressEdit = async () => {
   }
 }
 
-const exportData = () => {
-  if (!progress.value) return
-
-  const data = {
-    progress: progress.value,
-    records: records.value
-  }
-
-  const jsonStr = JSON.stringify(data, null, 2)
-  const blob = new Blob([jsonStr], { type: 'application/json' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = `${progress.value.name}_导出数据_${new Date().toISOString().split('T')[0]}.json`
-  document.body.appendChild(a)
-  a.click()
-  document.body.removeChild(a)
-  URL.revokeObjectURL(url)
-
-  ElMessage.success('数据导出成功')
-}
+// const exportData = () => {
+//   if (!progress.value) return
+//
+//   const data = {
+//     progress: progress.value,
+//     records: records.value
+//   }
+//
+//   const jsonStr = JSON.stringify(data, null, 2)
+//   const blob = new Blob([jsonStr], { type: 'application/json' })
+//   const url = URL.createObjectURL(blob)
+//   const a = document.createElement('a')
+//   a.href = url
+//   a.download = `${progress.value.name}_导出数据_${new Date().toISOString().split('T')[0]}.json`
+//   document.body.appendChild(a)
+//   a.click()
+//   document.body.removeChild(a)
+//   URL.revokeObjectURL(url)
+//
+//   ElMessage.success('数据导出成功')
+// }
 
 const deleteProgress = () => {
   if (!progress.value) return

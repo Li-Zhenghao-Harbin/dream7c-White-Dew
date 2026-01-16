@@ -133,7 +133,7 @@ class SimpleStorage {
                     const jsonString = JSON.stringify(data, null, 2)
                     const blob = new Blob([jsonString], { type: 'application/json' })
                     const url = URL.createObjectURL(blob)
-                    const filename = `white_dew_backup_${dayjs().format('YYYYMMDD_HHmmss')}.json`
+                    const filename = `白露_${dayjs().format('YYYYMMDD_HHmmss')}.json`
 
                     resolve({
                         success: true,

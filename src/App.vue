@@ -63,9 +63,9 @@
 
 
 <!--      store-->
-      <div class="data-manager-container">
-        <DataManager />
-      </div>
+<!--      <div class="data-manager-container">-->
+<!--        <DataManager />-->
+<!--      </div>-->
     </el-container>
 
     <!-- 关于对话框 -->

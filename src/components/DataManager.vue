@@ -1,24 +1,26 @@
 <template>
   <div class="data-manager">
-    <el-button type="info" plain @click="showManager = true">
-      <el-icon><Setting /></el-icon>
-      数据管理
-    </el-button>
+<!--    <el-button type="info" plain @click="showManager = true">-->
+<!--      <el-icon><Setting /></el-icon>-->
+<!--      数据管理-->
+<!--    </el-button>-->
 
     <el-dialog
-        v-model="showManager"
+        v-model="dialogVisible"
         title="数据管理"
         width="600px"
+        :close-on-click-modal="false"
+        @closed="handleDialogClosed"
     >
       <div class="manager-content">
         <!-- 存储状态 -->
         <div class="storage-status">
           <h3>存储状态</h3>
           <div class="status-info">
-            <div class="info-item">
-              <span class="label">数据位置:</span>
-              <span class="value">浏览器本地存储</span>
-            </div>
+<!--            <div class="info-item">-->
+<!--              <span class="label">数据位置:</span>-->
+<!--              <span class="value">浏览器本地存储</span>-->
+<!--            </div>-->
             <div class="info-item">
               <span class="label">进度数量:</span>
               <span class="value">{{ store.getAllProgresses.length }} 个</span>
@@ -52,17 +54,17 @@
         </div>
 
         <!-- 存储说明 -->
-        <div class="storage-info">
-          <h3>存储说明</h3>
-          <p>数据保存在浏览器的本地存储中，不会上传到服务器。</p>
-          <p>建议定期备份数据，以防浏览器数据被清除。</p>
-          <p>重装系统或更换电脑前，请务必备份数据。</p>
-        </div>
+<!--        <div class="storage-info">-->
+<!--          <h3>存储说明</h3>-->
+<!--          <p>数据保存在浏览器的本地存储中，不会上传到服务器。</p>-->
+<!--          <p>建议定期备份数据，以防浏览器数据被清除。</p>-->
+<!--          <p>重装系统或更换电脑前，请务必备份数据。</p>-->
+<!--        </div>-->
       </div>
 
       <template #footer>
-        <el-button @click="showManager = false">关闭</el-button>
-        <el-button type="primary" @click="handleManualSave">立即保存</el-button>
+<!--        <el-button @click="showManager = false">关闭</el-button>-->
+        <el-button type="primary" @click="handleManualSave">保存</el-button>
       </template>
     </el-dialog>
 
@@ -78,16 +80,44 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useRecruitmentStore } from '../store'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { Setting, Download, Upload, Delete } from '@element-plus/icons-vue'
+import {
+  DataBoard,
+  Document,
+  Clock,
+  Download,
+  Upload,
+  Delete,
+  Refresh
+} from '@element-plus/icons-vue'
+
+const props = defineProps({
+  modelValue: {
+    type: Boolean,
+    default: false
+  }
+})
+
+const emit = defineEmits(['update:modelValue'])
 
 const store = useRecruitmentStore()
-const showManager = ref(false)
 const fileInput = ref()
 const backupLoading = ref(false)
 const importLoading = ref(false)
+
+// 使用计算属性控制对话框显示
+const dialogVisible = computed({
+  get: () => props.modelValue,
+  set: (value) => emit('update:modelValue', value)
+})
+
+// 添加对话框关闭处理
+const handleDialogClosed = () => {
+  // 可以在这里添加关闭后的清理逻辑
+  console.log('数据管理对话框已关闭')
+}
 
 // 备份数据
 const handleBackup = async () => {
@@ -122,7 +152,7 @@ const handleFileSelect = async (event) => {
     const result = await store.restoreData(file)
     if (result.success) {
       ElMessage.success('数据导入成功')
-      showManager.value = false
+      // showManager.value = false
     } else {
       ElMessage.error(`导入失败: ${result.error}`)
     }
@@ -149,7 +179,7 @@ const handleClear = () => {
     const success = await store.clearAllData()
     if (success) {
       ElMessage.success('数据已清空')
-      showManager.value = false
+      // showManager.value = false
     } else {
       ElMessage.error('清空数据失败')
     }
