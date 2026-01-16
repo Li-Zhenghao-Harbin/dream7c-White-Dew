@@ -13,7 +13,7 @@ const routes = [
         name: 'Home',
         component: Home,
         meta: {
-            title: '首页 - White Dew',
+            // title: '首页 - White Dew',
             requiresAuth: false
         }
     },
@@ -22,7 +22,7 @@ const routes = [
         name: 'CreateProgress',
         component: CreateProgress,
         meta: {
-            title: '创建进度 - White Dew',
+            // title: '创建进度 - White Dew',
             requiresAuth: false
         }
     },
@@ -32,7 +32,7 @@ const routes = [
         component: ProgressDetail,
         props: true,
         meta: {
-            title: '进度详情 - White Dew',
+            // title: '进度详情 - White Dew',
             requiresAuth: false
         }
     },
@@ -71,11 +71,11 @@ const router = createRouter({
 // 全局前置守卫
 router.beforeEach((to, from, next) => {
     // 设置页面标题
-    if (to.meta.title) {
-        document.title = to.meta.title
-    } else {
-        document.title = 'White Dew - 招聘信息管理'
-    }
+    // if (to.meta.title) {
+    //     document.title = to.meta.title
+    // } else {
+    //     document.title = 'White Dew - 招聘信息管理'
+    // }
 
     // 这里可以添加权限验证逻辑
     if (to.meta.requiresAuth) {

@@ -16,7 +16,6 @@
           <div class="action-content">
             <el-icon size="48" color="#E6A23C"><Setting /></el-icon>
             <h3>数据管理</h3>
-            <p>备份、导入、清空数据</p>
           </div>
         </el-card>
 <!--        <el-card class="action-card" shadow="hover" @click="openDataManager">-->

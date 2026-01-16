@@ -23,7 +23,8 @@ function createWindow() {
     })
 
     // 设置应用标题
-    mainWindow.setTitle('White Dew - 招聘信息管理')
+    mainWindow.setTitle('柒幻 白露')
+    mainWindow.setMenu(null);
 
     // 开发环境
     if (process.env.NODE_ENV === 'development') {
