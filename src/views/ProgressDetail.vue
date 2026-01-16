@@ -115,6 +115,9 @@
       <div class="section-header">
         <h2>招聘记录</h2>
         <div class="section-actions">
+          <el-checkbox v-model="hideSalary" checked>隐藏待遇</el-checkbox>
+          <el-checkbox v-model="hideNote" checked>隐藏备注</el-checkbox>
+          &nbsp;
           <el-button type="primary" @click="showAddDialog = true">
             <el-icon><Plus /></el-icon>添加记录
           </el-button>
@@ -179,8 +182,8 @@
           </template>
         </el-table-column>
 
-        <el-table-column prop="salary" label="待遇" width="120" />
-        <el-table-column prop="note" label="备注" width="150" show-overflow-tooltip />
+        <el-table-column v-if="!hideSalary" prop="salary" label="待遇" width="120" />
+        <el-table-column v-if="!hideNote" prop="note" label="备注" width="150" show-overflow-tooltip />
 <!--        <el-table-column prop="website" label="官网" width="150">-->
 <!--          <template #default="scope">-->
 <!--            <a v-if="scope.row.website" :href="scope.row.website" target="_blank" @click.stop>-->
@@ -330,6 +333,9 @@ const editProgressFormRef = ref()
 
 const showStageDialog = ref(false)
 const currentStage = ref(null)
+
+const hideSalary = ref(true)
+const hideNote = ref(true)
 
 // 编辑进度表单
 const editProgressForm = ref({
