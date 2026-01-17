@@ -63,9 +63,9 @@
 
 
 <!--      store-->
-<!--      <div class="data-manager-container">-->
-<!--        <DataManager />-->
-<!--      </div>-->
+      <div class="data-manager-container">
+        <About />
+      </div>
     </el-container>
 
     <!-- 关于对话框 -->
@@ -106,6 +106,7 @@ import {
   Folder,
   InfoFilled
 } from '@element-plus/icons-vue'
+import About from "@/components/About.vue";
 
 const router = useRouter()
 const route = useRoute()

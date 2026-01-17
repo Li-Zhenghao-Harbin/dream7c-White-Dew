@@ -19,12 +19,14 @@ function createWindow() {
             preload: path.join(__dirname, 'preload.js')
         },
         show: false,
-        icon: path.join(__dirname, '../public/icon.ico')
+        icon: path.join(__dirname, '../public/icon.ico'),
     })
 
     // 设置应用标题
     mainWindow.setTitle('柒幻 白露')
     mainWindow.setMenu(null);
+    mainWindow.maximize()
+
 
     // 开发环境
     if (process.env.NODE_ENV === 'development') {
