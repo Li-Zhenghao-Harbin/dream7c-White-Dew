@@ -2,6 +2,7 @@ const { app, BrowserWindow, ipcMain } = require('electron')
 const path = require('path')
 const fs = require('fs')
 const { exec } = require('child_process')
+const { shell } = require('electron');
 
 console.log('🚀 启动 Electron 应用...')
 
@@ -50,6 +51,22 @@ function createWindow() {
         mainWindow = null
         console.log('🔌 窗口已关闭')
     })
+
+    mainWindow.webContents.setWindowOpenHandler(({ url }) => {
+        // 判断如果是http或https协议，则用默认浏览器打开
+        const parsedUrl = new URL(url);
+        if (parsedUrl.protocol === 'http:' || parsedUrl.protocol === 'https:') {
+            // 使用setImmediate避免可能的时序问题
+            setImmediate(() => {
+                shell.openExternal(url);
+            });
+            // 拒绝在Electron内部创建这个窗口
+            return { action: 'deny' };
+        }
+        // 对于其他协议（如mailto:），可以选择允许或拒绝
+        // 如果需要允许应用内部的一些特殊窗口，可以在这里判断并返回 { action: 'allow' }
+        return { action: 'deny' };
+    });
 }
 
 // 获取数据存储路径

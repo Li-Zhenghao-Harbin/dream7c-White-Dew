@@ -40,7 +40,6 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import { InfoFilled } from '@element-plus/icons-vue'
 
 const showManager = ref(false)
-
 </script>
 
 <style scoped>
