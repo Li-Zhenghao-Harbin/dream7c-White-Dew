@@ -70,18 +70,34 @@
       <el-form-item label="流程">
         <div class="stages-section">
           <div v-for="(stage, index) in form.currentStage" :key="index" class="stage-item">
-            <el-input
-                v-model="stage.name"
-                placeholder="阶段名称"
-                style="width: 150px; margin-right: 10px;"
-            />
-            <el-date-picker
-                v-model="stage.date"
-                type="date"
-                placeholder="日期"
-                style="width: 150px; margin-right: 10px;"
-                value-format="YYYY-MM-DD"
-            />
+            <!-- 阶段名称 - 添加验证 -->
+            <el-form-item
+                :prop="`currentStage.${index}.name`"
+                :rules="stageNameRules"
+                style="display: inline-block; margin-right: 10px;"
+            >
+              <el-input
+                  v-model="stage.name"
+                  placeholder="阶段名称"
+                  style="width: 150px;"
+              />
+            </el-form-item>
+
+            <!-- 日期 - 添加验证 -->
+            <el-form-item
+                :prop="`currentStage.${index}.date`"
+                :rules="stageDateRules"
+                style="display: inline-block; margin-right: 10px;"
+            >
+              <el-date-picker
+                  v-model="stage.date"
+                  type="date"
+                  placeholder="日期"
+                  style="width: 150px;"
+                  value-format="YYYY-MM-DD"
+              />
+            </el-form-item>
+
             <el-input
                 v-model="stage.notes"
                 placeholder="备注"
@@ -179,8 +195,60 @@ const rules = {
   ],
   applyDate: [
     { required: true, message: '请选择投递日期', trigger: 'change' }
+  ],
+  currentStage: [
+    {
+      validator: (rule, value, callback) => {
+        if (!value || value.length === 0) {
+          callback()
+          return
+        }
+
+        const hasError = value.some((stage, index) => {
+          return !stage.name || !stage.date
+        })
+
+        if (hasError) {
+          callback(new Error('请填写所有阶段的名称和日期'))
+        } else {
+          callback()
+        }
+      },
+      trigger: 'blur'
+    }
   ]
 }
+
+// 阶段名称的验证规则
+const stageNameRules = [
+  { required: true, message: '请输入阶段名称', trigger: 'blur' },
+  { min: 1, max: 50, message: '长度在 1 到 50 个字符', trigger: 'blur' }
+]
+
+// 阶段日期的验证规则
+const stageDateRules = [
+  { required: true, message: '请选择日期', trigger: 'change' },
+  {
+    validator: (rule, value, callback) => {
+      if (!value) {
+        callback()
+        return
+      }
+
+      const selectedDate = new Date(value)
+      const today = new Date()
+      today.setHours(0, 0, 0, 0)
+
+      if (selectedDate > today) {
+        callback(new Error('日期不能晚于今天'))
+      } else {
+        callback()
+      }
+    },
+    trigger: 'change'
+  }
+]
+
 
 // 生命周期
 onMounted(() => {
