@@ -118,7 +118,7 @@
           <el-checkbox v-model="hideSalary" checked>隐藏待遇</el-checkbox>
           <el-checkbox v-model="hideNote" checked>隐藏备注</el-checkbox>
           &nbsp;
-          <el-button type="primary" @click="showAddDialog = true">
+          <el-button type="primary" @click="addRecord()">
             <el-icon><Plus /></el-icon>添加记录
           </el-button>
           <el-button @click="refreshData">
@@ -441,9 +441,7 @@ const getResultTagType = (result) => {
 const handleAction = (command) => {
   switch (command) {
     case 'add-record':
-      showAddDialog.value = true
-      isEditing.value = false
-      currentRecord.value = null
+      addRecord()
       break
     case 'edit-progress':
       editProgress()
@@ -455,6 +453,12 @@ const handleAction = (command) => {
       deleteProgress()
       break
   }
+}
+
+const addRecord = () => {
+  showAddDialog.value = true
+  isEditing.value = false
+  currentRecord.value = null
 }
 
 const editProgress = () => {
