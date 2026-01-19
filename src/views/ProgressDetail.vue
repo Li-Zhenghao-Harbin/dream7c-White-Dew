@@ -174,7 +174,15 @@
           </template>
         </el-table-column>
 
-        <el-table-column prop="result" label="结果" width="100" fixed="right">
+        <el-table-column
+            prop="result"
+            label="结果"
+            width="100"
+            fixed="right"
+            :filters="resultFilters"
+            :filter-method="filterResult"
+            filter-placement="bottom-end"
+        >
           <template #default="scope">
             <el-tag :type="getResultTagType(scope.row.result)" size="small">
               {{ scope.row.result }}
@@ -336,6 +344,23 @@ const currentStage = ref(null)
 
 const hideSalary = ref(true)
 const hideNote = ref(true)
+
+// 过滤器选项
+const resultFilters = ref([
+  { text: 'offer', value: 'offer' },
+  { text: '进行中', value: '进行中' },
+  { text: '已拒绝', value: '已拒绝' },
+  { text: '简历挂', value: '简历挂' },
+  { text: '测评挂', value: '测评挂' },
+  { text: '笔试挂', value: '笔试挂' },
+  { text: '面试挂', value: '面试挂' },
+  { text: '未参加', value: '未参加' }
+])
+
+// 过滤方法
+const filterResult = (value, row) => {
+  return row.result === value
+}
 
 // 编辑进度表单
 const editProgressForm = ref({
