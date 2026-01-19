@@ -140,7 +140,7 @@
         <el-table-column prop="companyName" label="公司名称" width="150" fixed>
           <template #default="scope">
             <a v-if="scope.row.website" :href="scope.row.website" target="_blank" @click.stop>
-              {{ scope.row.companyName }}
+              {{ scope.row.companyName }} <el-icon><Link /></el-icon>
             </a>
           </template>
         </el-table-column>
@@ -377,9 +377,7 @@ const editProgressRules = {
 }
 
 const allTags = [
-  '秋招', '春招', '暑期实习', '日常实习', '社招',
-  '互联网专场', '金融专场', '国企专场', '海外招聘',
-  '紧急', '重点', '已完结'
+  '秋招', '春招', '暑期实习', '日常实习', '社招', '海外招聘'
 ]
 
 // 计算属性

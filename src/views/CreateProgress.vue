@@ -168,12 +168,11 @@ const rules = {
 
 // 建议的标签
 const suggestedTags = [
-  '秋招', '春招', '暑期实习', '日常实习', '社招',
-  '互联网专场', '金融专场', '国企专场', '海外招聘'
+  '秋招', '春招', '暑期实习', '日常实习', '社招', '海外招聘'
 ]
 
 // 所有标签选项
-const allTags = [...suggestedTags, '紧急', '重点', '已完结']
+const allTags = [...suggestedTags]
 
 // 创建成功的相关状态
 const successDialogVisible = ref(false)
