@@ -29,13 +29,13 @@
 
       <el-row :gutter="20">
         <el-col :span="12">
-          <el-form-item label="城市" prop="city">
-            <el-input v-model="form.city" placeholder="输入城市" />
+          <el-form-item label="岗位" prop="position">
+            <el-input v-model="form.position" placeholder="输入岗位名称" />
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item label="岗位" prop="position">
-            <el-input v-model="form.position" placeholder="输入岗位名称" />
+          <el-form-item label="城市" prop="city">
+            <el-input v-model="form.city" placeholder="输入城市" />
           </el-form-item>
         </el-col>
       </el-row>
