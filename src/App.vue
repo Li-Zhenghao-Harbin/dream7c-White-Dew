@@ -57,10 +57,11 @@
 <!--      </el-aside>-->
 
       <!-- 主内容区 -->
-      <el-main class="main-content">
-        <router-view />
-      </el-main>
-
+      <el-config-provider :locale="locale">
+        <el-main class="main-content">
+          <router-view />
+        </el-main>
+      </el-config-provider>
 
 <!--      store-->
       <div class="data-manager-container">
@@ -97,7 +98,7 @@ import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useRecruitmentStore } from './store'
 import DataManager from './components/DataManager.vue'
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElConfigProvider } from 'element-plus'
 import {
   Collection,
   House,
@@ -107,6 +108,9 @@ import {
   InfoFilled
 } from '@element-plus/icons-vue'
 import About from "@/components/About.vue";
+import zhCn from 'element-plus/es/locale/lang/zh-cn'
+
+const locale = zhCn
 
 const router = useRouter()
 const route = useRoute()
