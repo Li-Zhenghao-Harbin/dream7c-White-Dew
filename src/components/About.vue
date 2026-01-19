@@ -14,7 +14,7 @@
         <div class="about-container">
           <div class="text-section">
             <el-text class="title"><b>柒幻 白露</b></el-text><br/>
-            <el-text class="version">beta</el-text>
+            <el-text class="version">v 1.0.4</el-text>
           </div>
           <div class="icon-section">
             <img src="../../icon.ico" class="app-icon"/>
