@@ -15,7 +15,7 @@
           <el-tag>{{ scope.row.industry }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column prop="result" label="结果" width="100">
+      <el-table-column prop="result" label="状态" width="100">
         <template #default="scope">
           <el-tag :type="getResultType(scope.row.result)">
             {{ scope.row.result }}

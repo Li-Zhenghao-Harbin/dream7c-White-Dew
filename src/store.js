@@ -24,6 +24,7 @@ export const useRecruitmentStore = defineStore('recruitment', () => {
 
     // 结果选项
     const resultOptions = ref([
+        '待投递',
         '进行中',
         '未参加',
         '简历挂',

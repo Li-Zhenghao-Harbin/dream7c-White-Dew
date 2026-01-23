@@ -54,8 +54,8 @@
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item label="结果" prop="result">
-            <el-select v-model="form.result" placeholder="选择结果" style="width: 100%;">
+          <el-form-item label="状态" prop="result">
+            <el-select v-model="form.result" placeholder="选择状态" style="width: 100%;">
               <el-option
                   v-for="item in resultOptions"
                   :key="item"

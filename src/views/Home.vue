@@ -295,20 +295,20 @@ const deleteProgress = (progressId) => {
   })
 }
 
-// 获取结果标签类型
-const getResultTagType = (result) => {
-  const typeMap = {
-    '进行中': 'primary',
-    'offer': 'success',
-    '已拒绝': 'warning',
-    '简历挂': 'danger',
-    '测评挂': 'danger',
-    '笔试挂': 'danger',
-    '面试挂': 'danger',
-    '未参加': 'info'
-  }
-  return typeMap[result] || 'info'
-}
+// // 获取结果标签类型
+// const getResultTagType = (result) => {
+//   const typeMap = {
+//     '进行中': 'primary',
+//     'offer': 'success',
+//     '已拒绝': 'warning',
+//     '简历挂': 'danger',
+//     '测评挂': 'danger',
+//     '笔试挂': 'danger',
+//     '面试挂': 'danger',
+//     '未参加': 'info'
+//   }
+//   return typeMap[result] || 'info'
+// }
 </script>
 
 <style scoped>

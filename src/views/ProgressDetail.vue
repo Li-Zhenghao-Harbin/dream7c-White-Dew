@@ -176,7 +176,7 @@
 
         <el-table-column
             prop="result"
-            label="结果"
+            label="状态"
             width="100"
             fixed="right"
             :filters="resultFilters"
@@ -347,14 +347,15 @@ const hideNote = ref(true)
 
 // 过滤器选项
 const resultFilters = ref([
-  { text: 'offer', value: 'offer' },
+  { text: '待投递', value: '待投递' },
   { text: '进行中', value: '进行中' },
-  { text: '已拒绝', value: '已拒绝' },
+  { text: '未参加', value: '未参加' },
   { text: '简历挂', value: '简历挂' },
   { text: '测评挂', value: '测评挂' },
   { text: '笔试挂', value: '笔试挂' },
   { text: '面试挂', value: '面试挂' },
-  { text: '未参加', value: '未参加' }
+  { text: 'offer', value: 'offer' },
+  { text: '已拒绝', value: '已拒绝' }
 ])
 
 // 过滤方法
@@ -390,7 +391,7 @@ const records = computed(() => {
 })
 
 const totalRecords = computed(() => {
-  return records.value.length
+  return records.value.length - records.value.filter(record => record.result === '待投递').length
 })
 
 const inProgressCount = computed(() => {
