@@ -127,7 +127,7 @@
           <el-button @click="refreshData">
             <el-icon><Refresh /></el-icon>刷新
           </el-button>
-          <el-button @click="changeFullscreen">
+          <el-button @click="changeFullScreen">
             <el-icon><FullScreen /></el-icon>全屏
           </el-button>
         </div>
@@ -325,6 +325,8 @@ import {
   Refresh,
   ArrowDown,
   Plus,
+  PieChart,
+  FullScreen,
   Edit,
   Download,
   Delete,
@@ -621,7 +623,7 @@ const handleStageSubmit = () => {
   showStageDialog.value = false
 }
 
-const changeFullscreen = () => {
+const changeFullScreen = () => {
   fullscreen.value = !fullscreen.value
 }
 </script>

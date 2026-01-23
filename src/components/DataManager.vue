@@ -9,7 +9,6 @@
         v-model="dialogVisible"
         title="数据管理"
         width="600px"
-        :close-on-click-modal="false"
         @closed="handleDialogClosed"
     >
       <div class="manager-content">
