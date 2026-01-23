@@ -1,9 +1,6 @@
 <template>
   <div class="data-manager">
-    <el-button type="info" plain @click="showManager = true">
-      <el-icon><InfoFilled /></el-icon>
-      关于
-    </el-button>
+    <el-button type="info" plain @click="showManager = true" :icon="InfoFilled">关于</el-button>
 
     <el-dialog
         v-model="showManager"

@@ -118,17 +118,11 @@
           <el-checkbox v-model="hideSalary" checked>隐藏待遇</el-checkbox>
           <el-checkbox v-model="hideNote" checked>隐藏备注</el-checkbox>
           &nbsp;
-          <el-button type="primary" @click="addRecord()">
-            <el-icon><Plus /></el-icon>添加记录
+          <el-button type="primary" @click="addRecord()" :icon="Plus">添加记录</el-button>
+          <el-button @click="showStatistic" :icon="PieChart">统计</el-button>
+          <el-button @click="refreshData" :icon="Refresh">刷新
           </el-button>
-          <el-button @click="statistic">
-            <el-icon><PieChart /></el-icon>统计
-          </el-button>
-          <el-button @click="refreshData">
-            <el-icon><Refresh /></el-icon>刷新
-          </el-button>
-          <el-button @click="changeFullScreen">
-            <el-icon><FullScreen /></el-icon>全屏
+          <el-button @click="changeFullScreen" :icon="FullScreen">全屏
           </el-button>
         </div>
       </div>
