@@ -130,8 +130,8 @@
       <!-- 表格 -->
       <el-table
           :data="records"
+          :row-class-name="tableRowClassName"
           style="width: 100%"
-          stripe
           border
           size="large"
           empty-text="暂无记录"
@@ -407,6 +407,18 @@ const rejectedCount = computed(() => {
   const rejectedResults = ['简历挂', '测评挂', '笔试挂', '面试挂']
   return records.value.filter(record => rejectedResults.includes(record.result)).length
 })
+
+const tableRowClassName = ({ row, rowIndex }) => {
+  console.log(row)
+  if (row.result === 'offer' || row.result === '已拒绝') {
+    return "row-class-name-offer"
+  }
+  const failedResults = ['简历挂', '测评挂', '笔试挂', '面试挂']
+  if (failedResults.includes(row.result)) {
+    return "row-class-name-fail"
+  }
+  return ''
+}
 
 // 生命周期
 onMounted(() => {
@@ -744,5 +756,21 @@ const handleStageSubmit = () => {
 .action-buttons {
   display: flex;
   gap: 8px;
+}
+
+:deep(.el-table) .row-class-name-offer {
+  background-color: #f0f9eb !important;
+}
+
+:deep(.el-table) .row-class-name-offer:hover > td {
+  background-color: #f0f9eb !important;
+}
+
+:deep(.el-table) .row-class-name-fail {
+  background-color: #fff2f2 !important;
+}
+
+:deep(.el-table) .row-class-name-fail:hover > td {
+  background-color: #fff2f2 !important;
 }
 </style>
