@@ -1,7 +1,7 @@
 <template>
   <div class="progress-detail" v-loading="loading">
     <!-- 头部 -->
-    <div class="detail-header">
+    <div class="detail-header" v-if="!fullscreen">
       <div class="header-content">
         <div class="back-button">
           <el-button type="text" @click="goBack">
@@ -77,7 +77,7 @@
     </div>
 
     <!-- 统计数据 -->
-    <div class="stats-section">
+    <div class="stats-section" v-if="!fullscreen">
       <el-row :gutter="20">
         <el-col :span="6">
           <el-statistic title="总记录数" :value="totalRecords">
@@ -121,8 +121,14 @@
           <el-button type="primary" @click="addRecord()">
             <el-icon><Plus /></el-icon>添加记录
           </el-button>
+          <el-button @click="statistic">
+            <el-icon><PieChart /></el-icon>统计
+          </el-button>
           <el-button @click="refreshData">
             <el-icon><Refresh /></el-icon>刷新
+          </el-button>
+          <el-button @click="changeFullscreen">
+            <el-icon><FullScreen /></el-icon>全屏
           </el-button>
         </div>
       </div>
@@ -344,6 +350,8 @@ const currentStage = ref(null)
 
 const hideSalary = ref(true)
 const hideNote = ref(true)
+
+const fullscreen = ref(false)
 
 // 过滤器选项
 const resultFilters = ref([
@@ -611,6 +619,10 @@ const viewStage = (stageData) => {
 
 const handleStageSubmit = () => {
   showStageDialog.value = false
+}
+
+const changeFullscreen = () => {
+  fullscreen.value = !fullscreen.value
 }
 </script>
 
