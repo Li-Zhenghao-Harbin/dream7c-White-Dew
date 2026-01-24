@@ -141,7 +141,7 @@
     </el-form>
 
     <div class="form-actions">
-      <el-button @click="$emit('cancel')">取消</el-button>
+      <el-button @click="handleCancel">取消</el-button>
       <el-button type="primary" @click="handleSubmit">提交</el-button>
     </div>
   </div>
@@ -181,6 +181,20 @@ const form = reactive({
   note: '',
   website: ''
 })
+
+// 初始空表单数据
+const initialForm = {
+  companyName: '',
+  industry: '',
+  city: '',
+  position: '',
+  applyDate: '',
+  currentStage: [],
+  result: '进行中',
+  salary: '',
+  note: '',
+  website: ''
+}
 
 // 表单验证规则
 const rules = {
@@ -252,9 +266,10 @@ const stageDateRules = [
 
 // 生命周期
 onMounted(() => {
-  if (props.record) {
-    Object.assign(form, props.record)
-  }
+  resetForm()
+  // if (props.record) {
+  //   Object.assign(form, props.record)
+  // }
 })
 
 // 方法
@@ -289,6 +304,32 @@ const handleSubmit = async () => {
     console.error('表单验证失败:', error)
     if (error.errors) {
       ElMessage.warning('请填写完整信息')
+    }
+  }
+}
+
+const handleCancel = () => {
+  resetForm()
+  emit('cancel')
+}
+
+// 重置表单
+const resetForm = () => {
+  // 先重置表单验证状态
+  if (formRef.value) {
+    formRef.value.resetFields()
+  }
+
+  // 清空表单数据
+  Object.assign(form, { ...initialForm })
+
+  // 如果有传入的记录，则使用传入的记录
+  if (props.record) {
+    Object.assign(form, JSON.parse(JSON.stringify(props.record)))
+
+    // 确保 currentStage 是一个数组
+    if (!form.currentStage) {
+      form.currentStage = []
     }
   }
 }
