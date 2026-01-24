@@ -1,6 +1,6 @@
 {
   "name": "white_dew",
-  "version": "1.0.4",
+  "version": "1.0.11",
   "description": "招聘信息管理",
   "main": "src/main.js",
   "scripts": {
