@@ -119,7 +119,7 @@
           <el-checkbox v-model="hideNote" checked>隐藏备注</el-checkbox>
           &nbsp;
           <el-button type="primary" @click="addRecord()" :icon="Plus">添加记录</el-button>
-          <el-button @click="showStatistic" :icon="PieChart">统计</el-button>
+          <el-button @click="viewStatistic" :icon="PieChart">统计</el-button>
           <el-button @click="refreshData" :icon="Refresh">刷新
           </el-button>
           <el-button @click="changeFullScreen" :icon="FullScreen">全屏
@@ -251,6 +251,19 @@
       />
     </el-dialog>
 
+    <!-- 统计对话框 -->
+    <el-dialog
+        v-model="showStatisticDialog"
+        title="统计"
+        width="800px"
+    >
+      <StatisticForm
+          v-if="showStatisticDialog"
+          :chartData="statisticRecords"
+          @submit="handleStatisticSubmit"
+      />
+    </el-dialog>
+
     <!-- 编辑进度对话框 -->
     <el-dialog
         v-model="showEditProgressDialog"
@@ -328,6 +341,7 @@ import {
   SuccessFilled,
   CloseBold
 } from '@element-plus/icons-vue'
+import StatisticForm from "@/components/StatisticForm.vue";
 
 const router = useRouter()
 const route = useRoute()
@@ -342,7 +356,9 @@ const currentRecord = ref(null)
 const editProgressFormRef = ref()
 
 const showStageDialog = ref(false)
+const showStatisticDialog = ref(false)
 const currentStage = ref(null)
+const statisticRecords = ref(null)
 
 const hideSalary = ref(true)
 const hideNote = ref(true)
@@ -413,7 +429,6 @@ const rejectedCount = computed(() => {
 })
 
 const tableRowClassName = ({ row, rowIndex }) => {
-  console.log(row)
   if (row.result === 'offer' || row.result === '已拒绝') {
     return "row-class-name-offer"
   }
@@ -615,6 +630,29 @@ const viewStage = (stageData) => {
 
 const handleStageSubmit = () => {
   showStageDialog.value = false
+}
+
+const viewStatistic = () => {
+  // 预处理饼图数据
+  let resultCount = {};
+  records.value.forEach(item => {
+    const result = item?.result || '未知';
+    // 统计数量
+    if (resultCount[result]) {
+      resultCount[result] += 1;
+    } else {
+      resultCount[result] = 1;
+    }
+  });
+  statisticRecords.value = Object.keys(resultCount).map(result => ({
+    name: result,
+    value: resultCount[result]
+  }));
+  showStatisticDialog.value = true
+}
+
+const handleStatisticSubmit = () => {
+  showStatisticDialog.value = false
 }
 
 const changeFullScreen = () => {

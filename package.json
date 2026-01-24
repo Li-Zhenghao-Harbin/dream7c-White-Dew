@@ -15,19 +15,20 @@
     "clean": "rmdir /s /q dist 2>nul && rmdir /s /q dist_electron 2>nul && rmdir /s /q release 2>nul"
   },
   "dependencies": {
-    "vue": "^3.4.0",
-    "vue-router": "^4.2.0",
-    "pinia": "^2.1.0",
-    "element-plus": "^2.4.0",
     "@element-plus/icons-vue": "^2.3.0",
-    "dayjs": "^1.11.0"
+    "dayjs": "^1.11.0",
+    "echarts": "^6.0.0",
+    "element-plus": "^2.4.0",
+    "pinia": "^2.1.0",
+    "vue": "^3.4.0",
+    "vue-router": "^4.2.0"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.0.0",
-    "vite": "^4.0.0",
+    "concurrently": "^8.0.0",
     "electron": "^25.0.0",
     "electron-builder": "^24.0.0",
-    "concurrently": "^8.0.0",
+    "vite": "^4.0.0",
     "wait-on": "^7.0.0"
   },
   "build": {
