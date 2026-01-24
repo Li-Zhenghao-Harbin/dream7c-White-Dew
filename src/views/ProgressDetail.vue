@@ -126,7 +126,6 @@
               placeholder="搜索公司名称、行业、城市、岗位..."
               clearable
               style="width: 300px"
-              @input="handleSearch"
           >
             <template #prefix>
               <el-icon><Search /></el-icon>
