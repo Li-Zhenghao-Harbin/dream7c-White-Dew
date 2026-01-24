@@ -118,6 +118,20 @@
           <el-checkbox v-model="hideSalary" checked>隐藏待遇</el-checkbox>
           <el-checkbox v-model="hideNote" checked>隐藏备注</el-checkbox>
           &nbsp;
+<!--          <div v-if="searchKeyword" style="color: #666; font-size: 14px">-->
+<!--            找到 {{ filteredRecords.length }} 条记录（共 {{ records.length }} 条）-->
+<!--          </div>-->
+          <el-input
+              v-model="searchKeyword"
+              placeholder="搜索公司名称、行业、城市、岗位..."
+              clearable
+              style="width: 300px"
+              @input="handleSearch"
+          >
+            <template #prefix>
+              <el-icon><Search /></el-icon>
+            </template>
+          </el-input>
           <el-button type="primary" @click="addRecord()" :icon="Plus">添加记录</el-button>
           <el-button @click="viewStatistic" :icon="PieChart">统计</el-button>
           <el-button @click="refreshData" :icon="Refresh">刷新
@@ -129,7 +143,7 @@
 
       <!-- 表格 -->
       <el-table
-          :data="records"
+          :data="filteredRecords"
           :row-class-name="tableRowClassName"
           style="width: 100%"
           border
@@ -362,6 +376,7 @@ const statisticRecords = ref(null)
 
 const hideSalary = ref(true)
 const hideNote = ref(true)
+const searchKeyword = ref('')
 
 const fullscreen = ref(false)
 
@@ -408,6 +423,25 @@ const progress = computed(() => {
 
 const records = computed(() => {
   return store.getProgressRecords(progressId)
+})
+
+const filteredRecords = computed(() => {
+  if (!searchKeyword.value.trim()) {
+    return records.value
+  }
+
+  const keyword = searchKeyword.value.toLowerCase().trim()
+
+  return records.value.filter(record => {
+    // 搜索多个字段
+    return (
+        (record.companyName && record.companyName.toLowerCase().includes(keyword)) ||
+        (record.industry && record.industry.toLowerCase().includes(keyword)) ||
+        (record.city && record.city.toLowerCase().includes(keyword)) ||
+        (record.position && record.position.toLowerCase().includes(keyword)) ||
+        (record.note && record.note.toLowerCase().includes(keyword))
+    )
+  })
 })
 
 const totalRecords = computed(() => {

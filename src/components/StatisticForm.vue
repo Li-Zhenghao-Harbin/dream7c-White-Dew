@@ -21,7 +21,7 @@ const props = defineProps({
   },
   title: {
     type: String,
-    default: '数据分布'
+    default: '状态分布'
   },
   width: {
     type: String,
