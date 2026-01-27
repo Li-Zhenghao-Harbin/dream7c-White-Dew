@@ -203,8 +203,8 @@
           </template>
         </el-table-column>
 
-        <el-table-column v-if="!hideSalary" prop="salary" label="待遇" width="120" />
-        <el-table-column v-if="!hideNote" prop="note" label="备注" width="150" show-overflow-tooltip />
+        <el-table-column v-if="!hideSalary" prop="salary" label="待遇" width="150" />
+        <el-table-column v-if="!hideNote" prop="note" label="备注" width="120" show-overflow-tooltip />
 <!--        <el-table-column prop="website" label="官网" width="150">-->
 <!--          <template #default="scope">-->
 <!--            <a v-if="scope.row.website" :href="scope.row.website" target="_blank" @click.stop>-->
