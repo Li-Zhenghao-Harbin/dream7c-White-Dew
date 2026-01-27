@@ -85,7 +85,7 @@
                   <span>{{ progress.name }}</span>
                 </div>
                 <el-dropdown @click.stop>
-                  <el-button type="text" size="small">
+                  <el-button type="text" size="small" class="no-focus-btn" @click.stop>
                     <el-icon><MoreFilled /></el-icon>
                   </el-button>
                   <template #dropdown>
@@ -509,5 +509,10 @@ const deleteProgress = (progressId) => {
   white-space: nowrap;
   flex: 1;
   margin-right: 8px;
+}
+
+.no-focus-btn:focus {
+  outline: none !important;
+  box-shadow: none !important;
 }
 </style>
