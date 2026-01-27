@@ -196,7 +196,7 @@ import DataManager from '../components/DataManager.vue'
 import {
   Plus,
   Refresh,
-  Download,
+  Setting,
   Loading,
   Folder,
   MoreFilled,

@@ -1,24 +1,18 @@
-# white_dew
+# 柒幻 白露
+<img src="http://www.dream7c.com/images/dream7c%20WD%20logo.png" width="128" height="128" />
 
-## Project setup
-```
-npm install
-```
+### 介绍
+柒幻 白露 是柒幻于2026年1月推出的一款招聘记录软件，用于记录招聘进度和相关流程。
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
+### 截图
++ 主界面：
+<img src="http://www.dream7c.com/images/dream7c%20WD/dream7c%20WD%20ex1.png" />
 
-### Compiles and minifies for production
-```
-npm run build
-```
++ 新建进度：
+<img src="http://www.dream7c.com/images/dream7c%20WD/dream7c%20WD%20ex2.png" />
 
-### Lints and fixes files
-```
-npm run lint
-```
++ 添加/编辑记录：
+<img src="http://www.dream7c.com/images/dream7c%20WD/dream7c%20WD%20ex3.png" />
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
++ 进度总览：
+<img src="http://www.dream7c.com/images/dream7c%20WD/dream7c%20WD%20ex4.png" />
