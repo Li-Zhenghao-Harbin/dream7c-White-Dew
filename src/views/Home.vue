@@ -43,6 +43,10 @@
       <div class="progress-section">
         <div class="section-header">
           <h2>所有进度</h2>
+          <el-text>共 {{ store.getAllProgresses.length }} 项进度， {{
+              store.getAllProgresses.reduce((total, progress) =>
+                total + (progress.records?.length || 0), 0
+              )  }} 条记录</el-text>
           <el-button
               type="text"
               @click="refreshData"
