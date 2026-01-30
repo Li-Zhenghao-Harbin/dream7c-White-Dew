@@ -270,11 +270,12 @@ const stageDateRules = [
       }
 
       const selectedDate = new Date(value)
-      const today = new Date()
-      today.setHours(24, 0, 0, 0)
+      // const today = new Date()
+      // today.setHours(24, 0, 0, 0)
 
-      if (selectedDate > today) {
-        callback(new Error('日期不能晚于今天'))
+
+      if (selectedDate < new Date(form.applyDate)) {
+        callback(new Error('日期不能早于投递日期'))
       } else {
         callback()
       }
