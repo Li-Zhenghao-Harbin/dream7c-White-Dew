@@ -251,7 +251,7 @@ const stageDateRules = [
 
       const selectedDate = new Date(value)
       const today = new Date()
-      today.setHours(0, 0, 0, 0)
+      today.setHours(24, 0, 0, 0)
 
       if (selectedDate > today) {
         callback(new Error('日期不能晚于今天'))
