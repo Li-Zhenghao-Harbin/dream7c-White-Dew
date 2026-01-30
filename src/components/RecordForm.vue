@@ -42,7 +42,11 @@
 
       <el-row :gutter="20">
         <el-col :span="12">
-          <el-form-item label="投递日期" prop="applyDate">
+          <el-form-item prop="applyDate">
+            <template #label>
+              <span v-if="form.result !== '待投递'" style="color: red;">*</span>
+              投递日期
+            </template>
             <el-date-picker
                 v-model="form.applyDate"
                 type="date"
@@ -208,7 +212,18 @@ const rules = {
     { required: true, message: '请输入岗位', trigger: 'blur' }
   ],
   applyDate: [
-    { required: true, message: '请选择投递日期', trigger: 'change' }
+    {
+      validator: (rule, value, callback) => {
+        const requireValid = form.result !== '待投递'
+
+        if (requireValid) {
+          callback(new Error('请填写投递日期'))
+        } else {
+          callback()
+        }
+      },
+      trigger: 'change'
+    }
   ],
   currentStage: [
     {
