@@ -309,6 +309,11 @@ const handleSubmit = async () => {
   try {
     await formRef.value.validate()
 
+    if (form.result === '待投递' && form.currentStage.length > 0) {
+      ElMessage.error('待投递状态不能存在流程')
+      return;
+    }
+
     // 过滤掉空值的阶段
     const validStages = form.currentStage.filter(stage =>
         stage.name && stage.date
