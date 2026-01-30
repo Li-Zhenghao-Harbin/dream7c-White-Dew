@@ -214,9 +214,14 @@ const rules = {
   applyDate: [
     {
       validator: (rule, value, callback) => {
-        const requireValid = form.result !== '待投递'
+        // 如果状态是"待投递"，则不验证
+        if (form.result === '待投递') {
+          callback()
+          return
+        }
 
-        if (requireValid) {
+        // 如果状态不是"待投递"，则验证必填
+        if (!value) {
           callback(new Error('请填写投递日期'))
         } else {
           callback()
