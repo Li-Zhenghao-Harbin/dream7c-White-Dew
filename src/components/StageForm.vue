@@ -76,7 +76,6 @@ const form = reactive({
 onMounted(() => {
   if (props.stage) {
     Object.assign(form.currentStage, props.stage)
-    console.log(form)
   }
 })
 

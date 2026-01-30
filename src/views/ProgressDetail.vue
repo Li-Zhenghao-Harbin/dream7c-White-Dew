@@ -170,7 +170,7 @@
 
         <el-table-column prop="currentStage" label="流程" min-width="200">
           <template #default="scope">
-            <div v-if="scope.row.currentStage && scope.row.currentStage.length > 0" class="stages" style="cursor: pointer;" @click.stop="viewStage(scope.row.currentStage)">
+            <div v-if="scope.row.currentStage && scope.row.currentStage.length > 0" class="stages" style="cursor: pointer;" @click.stop="viewStage(scope.row)">
               <el-tag
                   v-for="stage in scope.row.currentStage.slice(0, 3)"
                   :key="stage.id"
@@ -657,7 +657,13 @@ const handleRecordSubmit = (recordData) => {
 
 
 const viewStage = (stageData) => {
-  currentStage.value = stageData
+  let applyStage = {
+    name: '投递',
+    date: stageData.applyDate,
+    notes: ''
+  }
+  currentStage.value = [applyStage, ...stageData.currentStage]
+  console.log(currentStage.value)
   showStageDialog.value = true
 }
 
