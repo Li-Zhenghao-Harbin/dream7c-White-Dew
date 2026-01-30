@@ -104,6 +104,15 @@ const handleSubmit = async () => {
   white-space: nowrap;
 }
 
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid #e4e7ed;
+}
+
 /* 确保表格行高度一致 */
 :deep(.el-table__row) {
   height: 60px;
