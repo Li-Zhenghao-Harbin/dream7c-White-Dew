@@ -444,7 +444,7 @@ const filteredRecords = computed(() => {
 })
 
 const totalRecords = computed(() => {
-  return records.value.length - records.value.filter(record => record.result === '待投递').length
+  return records.value.length// - records.value.filter(record => record.result === '待投递').length
 })
 
 const inProgressCount = computed(() => {
