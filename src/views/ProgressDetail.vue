@@ -149,6 +149,7 @@
           size="large"
           empty-text="暂无记录"
           :max-height="fullscreen ? 'calc(100vh - 100px)' : 'calc(100vh - 360px)'"
+          :default-sort="{ prop: 'applyDate', order: 'ascending' }"
       >
 <!--        <el-table-column prop="companyName" label="公司名称" width="150" fixed />-->
         <el-table-column prop="companyName" label="公司名称" width="150" fixed>
