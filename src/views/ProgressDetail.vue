@@ -148,7 +148,7 @@
           border
           size="large"
           empty-text="暂无记录"
-          height="calc(100vh - 360px)"
+          :max-height="fullscreen ? 'calc(100vh - 100px)' : 'calc(100vh - 360px)'"
       >
 <!--        <el-table-column prop="companyName" label="公司名称" width="150" fixed />-->
         <el-table-column prop="companyName" label="公司名称" width="150" fixed>
