@@ -27,6 +27,7 @@ export const useRecruitmentStore = defineStore('recruitment', () => {
         '待投递',
         '进行中',
         '未参加',
+        '招满/取消',
         '简历挂',
         '测评挂',
         '笔试挂',

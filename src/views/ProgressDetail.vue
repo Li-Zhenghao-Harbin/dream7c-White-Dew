@@ -386,6 +386,7 @@ const resultFilters = ref([
   { text: '待投递', value: '待投递' },
   { text: '进行中', value: '进行中' },
   { text: '未参加', value: '未参加' },
+  { text: '招满/取消', value: '招满/取消' },
   { text: '简历挂', value: '简历挂' },
   { text: '测评挂', value: '测评挂' },
   { text: '笔试挂', value: '笔试挂' },
@@ -526,7 +527,8 @@ const getResultTagType = (result) => {
     '测评挂': 'danger',
     '笔试挂': 'danger',
     '面试挂': 'danger',
-    '未参加': 'info'
+    '未参加': 'info',
+    '招满/取消': 'info'
   }
   return typeMap[result] || 'info'
 }
