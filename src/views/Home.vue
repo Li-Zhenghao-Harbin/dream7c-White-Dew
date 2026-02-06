@@ -176,7 +176,26 @@
               placeholder="请输入进度描述"
           />
         </el-form-item>
+        <el-form-item label="标签">
+          <el-select
+              v-model="editForm.tags"
+              multiple
+              filterable
+              allow-create
+              default-first-option
+              placeholder="选择或输入标签"
+              style="width: 100%;"
+          >
+            <el-option
+                v-for="tag in allTags"
+                :key="tag"
+                :label="tag"
+                :value="tag"
+            />
+          </el-select>
+        </el-form-item>
       </el-form>
+
 
       <template #footer>
         <el-button @click="editDialogVisible = false">取消</el-button>
@@ -213,8 +232,13 @@ const dataManagerVisible = ref(false)
 const editForm = ref({
   id: '',
   name: '',
-  description: ''
+  description: '',
+  tags: []
 })
+
+const allTags = [
+  '秋招', '春招', '暑期实习', '日常实习', '社招', '海外招聘'
+]
 
 // 打开数据管理器
 const openDataManager = () => {
@@ -259,7 +283,8 @@ const editProgress = (progress) => {
   editForm.value = {
     id: progress.id,
     name: progress.name,
-    description: progress.description || ''
+    description: progress.description || '',
+    tags: progress.tags || []
   }
   editDialogVisible.value = true
 }
@@ -273,7 +298,8 @@ const saveEditProgress = () => {
 
   store.updateProgress(editForm.value.id, {
     name: editForm.value.name,
-    description: editForm.value.description
+    description: editForm.value.description,
+    tags: editForm.value.tags
   })
 
   editDialogVisible.value = false
