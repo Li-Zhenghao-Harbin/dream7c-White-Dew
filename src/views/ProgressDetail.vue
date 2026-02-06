@@ -471,6 +471,9 @@ const tableRowClassName = ({ row, rowIndex }) => {
   if (failedResults.includes(row.result)) {
     return "row-class-name-fail"
   }
+  if (row.result === '未参加' || row.result === '招满/取消') {
+    return "row-class-name-cancel"
+  }
   return ''
 }
 
@@ -859,5 +862,13 @@ const changeFullScreen = () => {
 
 :deep(.el-table) .row-class-name-fail:hover > td {
   background-color: #fff2f2 !important;
+}
+
+:deep(.el-table) .row-class-name-cancel {
+  background-color: #efefef !important;
+}
+
+:deep(.el-table) .row-class-name-cancel:hover > td {
+  background-color: #efefef !important;
 }
 </style>
