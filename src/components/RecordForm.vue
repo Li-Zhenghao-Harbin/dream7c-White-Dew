@@ -73,17 +73,23 @@
 
       <el-form-item label="流程">
         <div class="stages-section">
+          <div v-if="form.currentStage.length > 0" class="stage-table-header">
+            <span>阶段</span>
+            <span>日期</span>
+            <span>备注</span>
+            <span>面试经验</span>
+            <span>操作</span>
+          </div>
           <div v-for="(stage, index) in form.currentStage" :key="index" class="stage-item">
             <!-- 阶段名称 - 添加验证 -->
             <el-form-item
                 :prop="`currentStage.${index}.name`"
                 :rules="stageNameRules"
-                style="display: inline-block; margin-right: 10px;"
+                class="stage-field"
             >
               <el-input
                   v-model="stage.name"
                   placeholder="阶段名称"
-                  style="width: 150px;"
               />
             </el-form-item>
 
@@ -91,37 +97,41 @@
             <el-form-item
                 :prop="`currentStage.${index}.date`"
                 :rules="stageDateRules"
-                style="display: inline-block; margin-right: 10px;"
+                class="stage-field"
             >
               <el-date-picker
                   v-model="stage.date"
                   type="date"
                   placeholder="日期"
-                  style="width: 150px;"
                   value-format="YYYY-MM-DD"
               />
             </el-form-item>
 
-            <el-input
-                v-model="stage.notes"
-                placeholder="备注"
-                style="width: 200px; margin-right: 10px;"
-            />
-            <el-button
-                type="primary"
-                text
-                :disabled="!stage.name || !stage.date"
-                @click="openExperienceDialog(stage)"
-            >
-              面试经验 {{ getExperienceCount(stage) > 0 ? `(${getExperienceCount(stage)})` : '' }}
-            </el-button>
-            <el-button
-                type="danger"
-                text
-                @click="removeStage(index)"
-            >
-              删除
-            </el-button>
+            <div class="stage-field">
+              <el-input
+                  v-model="stage.notes"
+                  placeholder="备注"
+              />
+            </div>
+            <div class="stage-field">
+              <el-button
+                  :type="getExperienceCount(stage) > 0 ? 'success' : 'primary'"
+                  plain
+                  :disabled="!stage.name || !stage.date"
+                  @click="openExperienceDialog(stage)"
+              >
+                {{ getExperienceCount(stage) > 0 ? '查看' : '添加' }}
+              </el-button>
+            </div>
+            <div class="stage-field stage-actions-cell">
+              <el-button
+                  type="danger"
+                  text
+                  @click="removeStage(index)"
+              >
+                删除
+              </el-button>
+            </div>
           </div>
           <el-button type="text" @click="addStage">
             <el-icon><Plus /></el-icon> 添加阶段
@@ -487,12 +497,52 @@ const resetForm = () => {
   padding: 16px;
 }
 
+.stage-table-header {
+  display: grid;
+  grid-template-columns: 1.2fr 1.1fr 1.4fr 0.8fr 0.6fr;
+  gap: 12px;
+  padding: 0 0 10px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid #ebeef5;
+  color: #606266;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.stage-table-header span:nth-child(4),
+.stage-table-header span:nth-child(5) {
+  text-align: center;
+}
+
 .stage-item {
-  display: flex;
-  align-items: center;
+  display: grid;
+  grid-template-columns: 1.2fr 1.1fr 1.4fr 0.8fr 0.6fr;
+  align-items: start;
+  gap: 12px;
   margin-bottom: 12px;
   padding-bottom: 12px;
   border-bottom: 1px dashed #e4e7ed;
+}
+
+.stage-field {
+  margin-bottom: 0;
+}
+
+.stage-field :deep(.el-form-item__content) {
+  width: 100%;
+}
+
+.stage-field :deep(.el-input),
+.stage-field :deep(.el-date-editor.el-input),
+.stage-field :deep(.el-button) {
+  width: 100%;
+}
+
+.stage-actions-cell {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 32px;
 }
 
 .stage-item:last-child {
