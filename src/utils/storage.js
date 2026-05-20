@@ -26,7 +26,8 @@ class SimpleStorage {
                 const saveData = {
                     version: this.DATA_VERSION,
                     lastUpdated: dayjs().format('YYYY-MM-DD HH:mm:ss'),
-                    progresses: JSON.parse(JSON.stringify(data.progresses || []))
+                    progresses: JSON.parse(JSON.stringify(data.progresses || [])),
+                    interviewExperiences: JSON.parse(JSON.stringify(data.interviewExperiences || []))
                 }
 
                 console.log('📝 数据内容:', {
@@ -103,7 +104,8 @@ class SimpleStorage {
         return {
             version: this.DATA_VERSION,
             lastUpdated: dayjs().format('YYYY-MM-DD HH:mm:ss'),
-            progresses: []
+            progresses: [],
+            interviewExperiences: []
         }
     }
 

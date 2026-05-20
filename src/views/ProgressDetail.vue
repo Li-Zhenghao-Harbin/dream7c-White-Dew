@@ -259,6 +259,7 @@
       <RecordForm
           v-if="showAddDialog"
           :record="currentRecord"
+          :progress-id="progressId"
           @submit="handleRecordSubmit"
           @cancel="showAddDialog = false"
       />
@@ -677,19 +678,41 @@ const deleteRecord = (recordId) => {
 }
 
 const handleRecordSubmit = (recordData) => {
+  const interviewExperienceDrafts = recordData.currentStage.map(stage => ({
+    stageId: stage.id,
+    content: stage.interviewExperienceContent || ''
+  }))
+  const cleanRecordData = {
+    ...recordData,
+    currentStage: recordData.currentStage.map(stage => {
+      const { interviewExperienceContent, ...stageData } = stage
+      return stageData
+    })
+  }
+
   if (isEditing.value && currentRecord.value) {
     // 更新记录
-    store.updateRecord(progressId, currentRecord.value.id, recordData)
+    store.updateRecord(progressId, currentRecord.value.id, cleanRecordData)
+    syncInterviewExperiences(currentRecord.value.id, interviewExperienceDrafts)
     ElMessage.success('记录更新成功')
   } else {
     // 添加新记录
-    store.addRecord(progressId, recordData)
+    const newRecord = store.addRecord(progressId, cleanRecordData)
+    if (newRecord) {
+      syncInterviewExperiences(newRecord.id, interviewExperienceDrafts)
+    }
     ElMessage.success('记录添加成功')
   }
 
   showAddDialog.value = false
   isEditing.value = false
   currentRecord.value = null
+}
+
+const syncInterviewExperiences = (recordId, drafts) => {
+  drafts.forEach(item => {
+    store.setStageInterviewExperience(progressId, recordId, item.stageId, item.content)
+  })
 }
 
 

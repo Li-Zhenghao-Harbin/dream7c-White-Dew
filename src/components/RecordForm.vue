@@ -108,6 +108,14 @@
                 style="width: 200px; margin-right: 10px;"
             />
             <el-button
+                type="primary"
+                text
+                :disabled="!stage.name || !stage.date"
+                @click="openExperienceDialog(stage)"
+            >
+              面试经验 {{ getExperienceCount(stage) > 0 ? `(${getExperienceCount(stage)})` : '' }}
+            </el-button>
+            <el-button
                 type="danger"
                 text
                 @click="removeStage(index)"
@@ -144,6 +152,31 @@
       </el-form-item>
     </el-form>
 
+    <el-dialog
+        v-model="experienceDialogVisible"
+        :title="experienceDialogTitle"
+        width="760px"
+        append-to-body
+    >
+      <div class="experience-editor">
+        <el-input
+            v-model="experienceContent"
+            type="textarea"
+            :rows="8"
+            maxlength="20000"
+            show-word-limit
+            placeholder="记录面试题、回答思路、复盘总结、注意事项等"
+        />
+        <div class="experience-actions">
+          <el-button type="danger" text @click="removeExperience">
+            删除经验
+          </el-button>
+          <el-button @click="experienceDialogVisible = false">取消</el-button>
+          <el-button type="primary" @click="saveExperience">保存经验</el-button>
+        </div>
+      </div>
+    </el-dialog>
+
     <div class="form-actions">
       <el-button @click="handleCancel">取消</el-button>
       <el-button type="primary" @click="handleSubmit">提交</el-button>
@@ -152,7 +185,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import { useRecruitmentStore } from '../store'
 import { ElMessage } from 'element-plus'
 import { Plus } from '@element-plus/icons-vue'
@@ -161,6 +194,10 @@ const props = defineProps({
   record: {
     type: Object,
     default: null
+  },
+  progressId: {
+    type: String,
+    default: ''
   }
 })
 
@@ -168,9 +205,17 @@ const emit = defineEmits(['submit', 'cancel'])
 
 const store = useRecruitmentStore()
 const formRef = ref()
+const experienceDialogVisible = ref(false)
+const selectedStage = ref(null)
+const experienceContent = ref('')
 
 const industryOptions = store.industryOptions
 const resultOptions = store.resultOptions
+
+const experienceDialogTitle = computed(() => {
+  const stageName = selectedStage.value?.name || '阶段'
+  return `${stageName} - 面试经验`
+})
 
 // 表单数据
 const form = reactive({
@@ -296,14 +341,71 @@ onMounted(() => {
 // 方法
 const addStage = () => {
   form.currentStage.push({
+    id: store.generateId(),
     name: '',
     date: '',
-    notes: ''
+    notes: '',
+    experienceIds: []
   })
 }
 
 const removeStage = (index) => {
   form.currentStage.splice(index, 1)
+}
+
+const openExperienceDialog = (stage) => {
+  if (!stage.name || !stage.date) {
+    ElMessage.warning('请先填写阶段名称和日期')
+    return
+  }
+
+  ensureStageId(stage)
+  selectedStage.value = stage
+  experienceContent.value = stage.interviewExperienceContent || ''
+  experienceDialogVisible.value = true
+}
+
+const saveExperience = () => {
+  if (!selectedStage.value) {
+    return
+  }
+
+  ensureStageId(selectedStage.value)
+  selectedStage.value.interviewExperienceContent = experienceContent.value.trim()
+  experienceDialogVisible.value = false
+  ElMessage.success('面试经验已保存，提交记录后生效')
+}
+
+const removeExperience = () => {
+  if (!selectedStage.value) {
+    return
+  }
+
+  selectedStage.value.interviewExperienceContent = ''
+  experienceContent.value = ''
+  ElMessage.success('面试经验已删除，提交记录后生效')
+}
+
+const getExperienceCount = (stage) => {
+  if (stage.interviewExperienceContent?.trim()) {
+    return 1
+  }
+
+  if (!props.record || !stage.id) {
+    return 0
+  }
+
+  return store.getStageInterviewExperience(props.record.id, stage.id) ? 1 : 0
+}
+
+const ensureStageId = (stage) => {
+  if (!stage.id) {
+    stage.id = store.generateId()
+  }
+
+  if (!Array.isArray(stage.experienceIds)) {
+    stage.experienceIds = []
+  }
 }
 
 const handleSubmit = async () => {
@@ -316,9 +418,16 @@ const handleSubmit = async () => {
     }
 
     // 过滤掉空值的阶段
-    const validStages = form.currentStage.filter(stage =>
-        stage.name && stage.date
-    )
+    const validStages = form.currentStage
+        .filter(stage => stage.name && stage.date)
+        .map(stage => {
+          ensureStageId(stage)
+          const { interviewExperienceContent, ...stageData } = stage
+          return {
+            ...stageData,
+            interviewExperienceContent
+          }
+        })
 
     const submitData = {
       ...form,
@@ -357,6 +466,12 @@ const resetForm = () => {
     if (!form.currentStage) {
       form.currentStage = []
     }
+
+    form.currentStage.forEach(ensureStageId)
+    form.currentStage.forEach(stage => {
+      const experience = store.getStageInterviewExperience(props.record.id, stage.id)
+      stage.interviewExperienceContent = experience?.content || ''
+    })
   }
 }
 </script>
@@ -384,6 +499,18 @@ const resetForm = () => {
   border-bottom: none;
   margin-bottom: 0;
   padding-bottom: 0;
+}
+
+.experience-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.experience-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
 }
 
 .form-actions {

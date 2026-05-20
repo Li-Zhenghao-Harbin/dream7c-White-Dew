@@ -6,6 +6,7 @@ import storage from './utils/storage'  // 导入简单存储
 export const useRecruitmentStore = defineStore('recruitment', () => {
     // 状态
     const progresses = ref([])
+    const interviewExperiences = ref([])
     const isLoading = ref(false)
     const lastSaveTime = ref(null)
 
@@ -56,6 +57,20 @@ export const useRecruitmentStore = defineStore('recruitment', () => {
         return progress ? progress.records : []
     }
 
+    const getStageInterviewExperiences = (recordId, stageId) => {
+        if (!recordId || !stageId) {
+            return []
+        }
+
+        return interviewExperiences.value.filter(item =>
+            item.recordId === recordId && item.stageId === stageId
+        )
+    }
+
+    const getStageInterviewExperience = (recordId, stageId) => {
+        return getStageInterviewExperiences(recordId, stageId)[0] || null
+    }
+
     // Actions
     const createProgress = (name, description = '') => {
         const newProgress = {
@@ -91,6 +106,7 @@ export const useRecruitmentStore = defineStore('recruitment', () => {
         const index = progresses.value.findIndex(p => p.id === id)
         if (index !== -1) {
             progresses.value.splice(index, 1)
+            interviewExperiences.value = interviewExperiences.value.filter(item => item.progressId !== id)
             saveToStorage() // 立即保存
             return true
         }
@@ -103,6 +119,7 @@ export const useRecruitmentStore = defineStore('recruitment', () => {
             const newRecord = {
                 id: generateId(),
                 ...recordData,
+                currentStage: normalizeStages(recordData.currentStage),
                 created: dayjs().format('YYYY-MM-DD HH:mm:ss'),
                 updated: dayjs().format('YYYY-MM-DD HH:mm:ss')
             }
@@ -124,11 +141,14 @@ export const useRecruitmentStore = defineStore('recruitment', () => {
         if (progress && progress.records) {
             const recordIndex = progress.records.findIndex(r => r.id === recordId)
             if (recordIndex !== -1) {
+                const normalizedStages = normalizeStages(recordData.currentStage)
                 progress.records[recordIndex] = {
                     ...progress.records[recordIndex],
                     ...recordData,
+                    currentStage: normalizedStages,
                     updated: dayjs().format('YYYY-MM-DD HH:mm:ss')
                 }
+                cleanupRemovedStageExperiences(progressId, recordId, normalizedStages)
                 progress.updated = dayjs().format('YYYY-MM-DD HH:mm:ss')
                 saveToStorage() // 立即保存
                 return true
@@ -143,6 +163,7 @@ export const useRecruitmentStore = defineStore('recruitment', () => {
             const recordIndex = progress.records.findIndex(r => r.id === recordId)
             if (recordIndex !== -1) {
                 progress.records.splice(recordIndex, 1)
+                interviewExperiences.value = interviewExperiences.value.filter(item => item.recordId !== recordId)
                 progress.updated = dayjs().format('YYYY-MM-DD HH:mm:ss')
                 saveToStorage() // 立即保存
                 return true
@@ -152,10 +173,67 @@ export const useRecruitmentStore = defineStore('recruitment', () => {
     }
 
     // 数据持久化
+    const addInterviewExperience = (progressId, recordId, stageId, content) => {
+        const text = (content || '').trim()
+        if (!progressId || !recordId || !stageId || !text) {
+            return null
+        }
+
+        const existing = getStageInterviewExperience(recordId, stageId)
+        if (existing) {
+            existing.content = text
+            existing.updatedAt = dayjs().format('YYYY-MM-DD HH:mm:ss')
+            interviewExperiences.value = interviewExperiences.value.filter(item =>
+                item.id === existing.id || item.recordId !== recordId || item.stageId !== stageId
+            )
+            saveToStorage()
+            return existing
+        }
+
+        const newExperience = {
+            id: generateId(),
+            progressId,
+            recordId,
+            stageId,
+            content: text,
+            createdAt: dayjs().format('YYYY-MM-DD HH:mm:ss'),
+            updatedAt: dayjs().format('YYYY-MM-DD HH:mm:ss')
+        }
+
+        interviewExperiences.value.push(newExperience)
+        saveToStorage()
+        return newExperience
+    }
+
+    const setStageInterviewExperience = (progressId, recordId, stageId, content) => {
+        const text = (content || '').trim()
+        const existing = getStageInterviewExperience(recordId, stageId)
+
+        if (!text) {
+            if (existing) {
+                return deleteInterviewExperience(existing.id)
+            }
+            return false
+        }
+
+        return !!addInterviewExperience(progressId, recordId, stageId, text)
+    }
+
+    const deleteInterviewExperience = (experienceId) => {
+        const index = interviewExperiences.value.findIndex(item => item.id === experienceId)
+        if (index !== -1) {
+            interviewExperiences.value.splice(index, 1)
+            saveToStorage()
+            return true
+        }
+        return false
+    }
+
     const saveToStorage = async () => {
         try {
             const data = {
                 progresses: progresses.value,
+                interviewExperiences: interviewExperiences.value,
                 lastUpdated: dayjs().format('YYYY-MM-DD HH:mm:ss')
             }
 
@@ -183,10 +261,12 @@ export const useRecruitmentStore = defineStore('recruitment', () => {
             const data = await storage.load()
 
             if (data && data.progresses) {
-                progresses.value = data.progresses
+                progresses.value = normalizeProgresses(data.progresses)
+                interviewExperiences.value = data.interviewExperiences || []
                 console.log(`✅ 数据加载成功，共 ${data.progresses.length} 个进度`)
             } else {
                 progresses.value = []
+                interviewExperiences.value = []
                 console.log('📭 没有找到数据，使用空数据')
             }
 
@@ -197,6 +277,7 @@ export const useRecruitmentStore = defineStore('recruitment', () => {
         } catch (error) {
             console.error('❌ 加载数据时出错:', error)
             progresses.value = []
+            interviewExperiences.value = []
         } finally {
             isLoading.value = false
         }
@@ -232,6 +313,13 @@ export const useRecruitmentStore = defineStore('recruitment', () => {
     // 从文件恢复数据
     const restoreData = async (file) => {
         try {
+            if (file && Array.isArray(file.progresses)) {
+                progresses.value = normalizeProgresses(file.progresses)
+                interviewExperiences.value = file.interviewExperiences || []
+                await saveToStorage()
+                return { success: true, data: file }
+            }
+
             const result = await storage.importData(file)
 
             if (result.success) {
@@ -253,6 +341,7 @@ export const useRecruitmentStore = defineStore('recruitment', () => {
     const clearAllData = async () => {
         try {
             progresses.value = []
+            interviewExperiences.value = []
             await storage.clear()
             console.log('✅ 数据已清空')
             return true
@@ -272,9 +361,43 @@ export const useRecruitmentStore = defineStore('recruitment', () => {
         return Date.now().toString(36) + Math.random().toString(36).substr(2, 5)
     }
 
+    const normalizeStages = (stages = []) => {
+        if (!Array.isArray(stages)) {
+            return []
+        }
+
+        return stages.map(stage => ({
+            ...stage,
+            id: stage.id || generateId(),
+            experienceIds: Array.isArray(stage.experienceIds) ? stage.experienceIds : []
+        }))
+    }
+
+    const normalizeProgresses = (items = []) => {
+        return items.map(progress => ({
+            ...progress,
+            records: (progress.records || []).map(record => ({
+                ...record,
+                currentStage: normalizeStages(record.currentStage)
+            }))
+        }))
+    }
+
+    const cleanupRemovedStageExperiences = (progressId, recordId, stages = []) => {
+        const activeStageIds = stages.map(stage => stage.id)
+        interviewExperiences.value = interviewExperiences.value.filter(item => {
+            if (item.progressId !== progressId || item.recordId !== recordId) {
+                return true
+            }
+
+            return activeStageIds.includes(item.stageId)
+        })
+    }
+
     return {
         // 状态
         progresses,
+        interviewExperiences,
         isLoading,
         lastSaveTime,
 
@@ -286,6 +409,8 @@ export const useRecruitmentStore = defineStore('recruitment', () => {
         getAllProgresses,
         getProgressById,
         getProgressRecords,
+        getStageInterviewExperiences,
+        getStageInterviewExperience,
 
         // Actions
         createProgress,
@@ -294,6 +419,9 @@ export const useRecruitmentStore = defineStore('recruitment', () => {
         addRecord,
         updateRecord,
         deleteRecord,
+        addInterviewExperience,
+        setStageInterviewExperience,
+        deleteInterviewExperience,
         saveToStorage,
         loadFromStorage,
         backupData,
