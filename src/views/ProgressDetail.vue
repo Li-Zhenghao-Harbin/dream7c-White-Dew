@@ -299,10 +299,26 @@
     >
       <div class="interview-overview">
         <div class="overview-toolbar">
-          <el-segmented
-              v-model="interviewOverviewMode"
-              :options="interviewOverviewOptions"
-          />
+          <div class="overview-toolbar-side">
+            <el-input
+                v-if="interviewOverviewMode === 'company'"
+                v-model="interviewCompanyKeyword"
+                placeholder="搜索公司名"
+                clearable
+                class="overview-search"
+            >
+              <template #prefix>
+                <el-icon><Search /></el-icon>
+              </template>
+            </el-input>
+          </div>
+          <div class="overview-toolbar-center">
+            <el-segmented
+                v-model="interviewOverviewMode"
+                :options="interviewOverviewOptions"
+            />
+          </div>
+          <div class="overview-toolbar-side overview-toolbar-side-right"></div>
         </div>
 
         <el-empty
@@ -322,13 +338,23 @@
                 :key="item.id"
                 class="overview-item"
             >
-              <div class="overview-item-meta">
-                <span>{{ item.companyName }}</span>
-                <span>{{ item.stageDate }}</span>
-                <span>{{ item.stageName }}</span>
-                <span>{{ item.position }}</span>
+              <div class="overview-item-header" @click="toggleInterviewExperience(item.id)">
+                <div class="overview-item-meta">
+                  <span>{{ item.companyName }}</span>
+                  <span>{{ item.stageDate }}</span>
+                  <span>{{ item.stageName }}</span>
+                  <span>{{ item.position }}</span>
+                </div>
+                <el-button text size="small">
+                  {{ isInterviewExperienceExpanded(item.id) ? '收起' : '展开' }}
+                </el-button>
               </div>
-              <div class="overview-item-content">{{ item.content }}</div>
+              <div
+                  class="overview-item-content"
+                  :class="{ collapsed: !isInterviewExperienceExpanded(item.id) }"
+              >
+                {{ item.content }}
+              </div>
             </div>
           </section>
         </div>
@@ -444,6 +470,8 @@ const interviewOverviewOptions = [
   { label: '按公司', value: 'company' },
   { label: '按时间', value: 'time' }
 ]
+const interviewCompanyKeyword = ref('')
+const expandedInterviewExperienceIds = ref([])
 
 // 过滤器选项
 const resultFilters = ref([
@@ -537,9 +565,13 @@ const interviewOverviewItems = computed(() => {
 
 const interviewOverviewGroups = computed(() => {
   const groups = new Map()
-  const sortedItems = [...interviewOverviewItems.value].sort((a, b) => {
+  const keyword = interviewCompanyKeyword.value.trim().toLowerCase()
+  const visibleItems = interviewOverviewMode.value === 'company' && keyword
+      ? interviewOverviewItems.value.filter(item => item.companyName.toLowerCase().includes(keyword))
+      : interviewOverviewItems.value
+  const sortedItems = [...visibleItems].sort((a, b) => {
     if (interviewOverviewMode.value === 'time') {
-      return a.sortDate.localeCompare(b.sortDate) || a.companyName.localeCompare(b.companyName)
+      return b.sortDate.localeCompare(a.sortDate) || a.companyName.localeCompare(b.companyName)
     }
 
     return a.companyName.localeCompare(b.companyName) || a.sortDate.localeCompare(b.sortDate)
@@ -561,7 +593,12 @@ const interviewOverviewGroups = computed(() => {
     groups.get(key).items.push(item)
   })
 
-  return Array.from(groups.values())
+  const groupedValues = Array.from(groups.values())
+  if (interviewOverviewMode.value === 'time') {
+    return groupedValues.sort((a, b) => b.key.localeCompare(a.key))
+  }
+
+  return groupedValues
 })
 
 const totalRecords = computed(() => {
@@ -853,6 +890,19 @@ const viewInterviewOverview = () => {
   showInterviewOverviewDialog.value = true
 }
 
+const isInterviewExperienceExpanded = (id) => {
+  return expandedInterviewExperienceIds.value.includes(id)
+}
+
+const toggleInterviewExperience = (id) => {
+  if (isInterviewExperienceExpanded(id)) {
+    expandedInterviewExperienceIds.value = expandedInterviewExperienceIds.value.filter(item => item !== id)
+    return
+  }
+
+  expandedInterviewExperienceIds.value = [...expandedInterviewExperienceIds.value, id]
+}
+
 const handleStatisticSubmit = () => {
   showStatisticDialog.value = false
 }
@@ -1020,7 +1070,28 @@ const changeFullScreen = () => {
 
 .overview-toolbar {
   display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+}
+
+.overview-toolbar-side {
+  flex: 0 0 260px;
+  display: flex;
+}
+
+.overview-toolbar-center {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.overview-toolbar-side-right {
   justify-content: flex-end;
+}
+
+.overview-search {
+  width: 260px;
 }
 
 .overview-groups {
@@ -1046,6 +1117,13 @@ const changeFullScreen = () => {
   background: #fafafa;
 }
 
+.overview-item-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  cursor: pointer;
+}
+
 .overview-item-meta {
   display: flex;
   flex-wrap: wrap;
@@ -1060,6 +1138,14 @@ const changeFullScreen = () => {
   line-height: 1.7;
   white-space: pre-wrap;
   word-break: break-word;
+}
+
+.overview-item-content.collapsed {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  color: #909399;
 }
 
 :deep(.el-table) .row-class-name-offer {
