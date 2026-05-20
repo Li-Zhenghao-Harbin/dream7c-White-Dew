@@ -133,6 +133,7 @@
           </el-input>
           <el-button type="primary" @click="addRecord()" :icon="Plus">添加记录</el-button>
           <el-button @click="viewStatistic" :icon="PieChart">统计</el-button>
+          <el-button @click="viewInterviewOverview" :icon="Document">面试经验</el-button>
           <el-button @click="refreshData" :icon="Refresh">刷新
           </el-button>
           <el-button @click="changeFullScreen" :icon="FullScreen">全屏
@@ -291,6 +292,49 @@
       />
     </el-dialog>
 
+    <el-dialog
+        v-model="showInterviewOverviewDialog"
+        title="面试经验总览"
+        width="900px"
+    >
+      <div class="interview-overview">
+        <div class="overview-toolbar">
+          <el-segmented
+              v-model="interviewOverviewMode"
+              :options="interviewOverviewOptions"
+          />
+        </div>
+
+        <el-empty
+            v-if="interviewOverviewGroups.length === 0"
+            description="暂无面试经验"
+        />
+
+        <div v-else class="overview-groups">
+          <section
+              v-for="group in interviewOverviewGroups"
+              :key="group.key"
+              class="overview-group"
+          >
+            <h3>{{ group.title }}</h3>
+            <div
+                v-for="item in group.items"
+                :key="item.id"
+                class="overview-item"
+            >
+              <div class="overview-item-meta">
+                <span>{{ item.companyName }}</span>
+                <span>{{ item.stageDate }}</span>
+                <span>{{ item.stageName }}</span>
+                <span>{{ item.position }}</span>
+              </div>
+              <div class="overview-item-content">{{ item.content }}</div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </el-dialog>
+
     <!-- 编辑进度对话框 -->
     <el-dialog
         v-model="showEditProgressDialog"
@@ -384,6 +428,7 @@ const editProgressFormRef = ref()
 
 const showStageDialog = ref(false)
 const showStatisticDialog = ref(false)
+const showInterviewOverviewDialog = ref(false)
 const currentStage = ref(null)
 const statisticRecords = ref(null)
 
@@ -394,6 +439,11 @@ const currentPage = ref(1)
 const pageSize = ref(20)
 
 const fullscreen = ref(false)
+const interviewOverviewMode = ref('company')
+const interviewOverviewOptions = [
+  { label: '按公司', value: 'company' },
+  { label: '按时间', value: 'time' }
+]
 
 // 过滤器选项
 const resultFilters = ref([
@@ -463,6 +513,55 @@ const filteredRecords = computed(() => {
 const paginatedRecords = computed(() => {
   const start = (currentPage.value - 1) * pageSize.value
   return filteredRecords.value.slice(start, start + pageSize.value)
+})
+
+const interviewOverviewItems = computed(() => {
+  const currentProgressId = String(progressId)
+  return store.interviewExperiences
+      .filter(item => String(item.progressId) === currentProgressId)
+      .map(experience => {
+        const record = records.value.find(item => item.id === experience.recordId)
+        const stage = record?.currentStage?.find(item => item.id === experience.stageId)
+
+        return {
+          ...experience,
+          companyName: record?.companyName || '未知公司',
+          position: record?.position || '-',
+          stageName: stage?.name || '未知阶段',
+          stageDate: stage?.date || '',
+          sortDate: stage?.date || '9999-12-31'
+        }
+      })
+      .filter(item => item.content)
+})
+
+const interviewOverviewGroups = computed(() => {
+  const groups = new Map()
+  const sortedItems = [...interviewOverviewItems.value].sort((a, b) => {
+    if (interviewOverviewMode.value === 'time') {
+      return a.sortDate.localeCompare(b.sortDate) || a.companyName.localeCompare(b.companyName)
+    }
+
+    return a.companyName.localeCompare(b.companyName) || a.sortDate.localeCompare(b.sortDate)
+  })
+
+  sortedItems.forEach(item => {
+    const key = interviewOverviewMode.value === 'time'
+        ? (item.stageDate || '未填写时间')
+        : item.companyName
+
+    if (!groups.has(key)) {
+      groups.set(key, {
+        key,
+        title: key,
+        items: []
+      })
+    }
+
+    groups.get(key).items.push(item)
+  })
+
+  return Array.from(groups.values())
 })
 
 const totalRecords = computed(() => {
@@ -750,6 +849,10 @@ const viewStatistic = () => {
   showStatisticDialog.value = true
 }
 
+const viewInterviewOverview = () => {
+  showInterviewOverviewDialog.value = true
+}
+
 const handleStatisticSubmit = () => {
   showStatisticDialog.value = false
 }
@@ -907,6 +1010,56 @@ const changeFullScreen = () => {
   display: flex;
   justify-content: flex-end;
   padding: 16px 8px 0;
+}
+
+.interview-overview {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.overview-toolbar {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.overview-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  max-height: 60vh;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.overview-group h3 {
+  margin: 0 0 10px;
+  color: #303133;
+  font-size: 16px;
+}
+
+.overview-item {
+  border: 1px solid #e4e7ed;
+  border-radius: 6px;
+  padding: 12px;
+  margin-bottom: 10px;
+  background: #fafafa;
+}
+
+.overview-item-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  color: #606266;
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+
+.overview-item-content {
+  color: #303133;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 :deep(.el-table) .row-class-name-offer {
