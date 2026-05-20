@@ -142,7 +142,7 @@
 
       <!-- 表格 -->
       <el-table
-          :data="filteredRecords"
+          :data="paginatedRecords"
           :row-class-name="tableRowClassName"
           style="width: 100%"
           border
@@ -237,6 +237,17 @@
           </template>
         </el-table-column>
       </el-table>
+
+      <div class="pagination-container" v-if="filteredRecords.length > 0">
+        <el-pagination
+            v-model:current-page="currentPage"
+            v-model:page-size="pageSize"
+            :page-sizes="[20, 50, 100]"
+            :total="filteredRecords.length"
+            layout="total, sizes, prev, pager, next, jumper"
+            background
+        />
+      </div>
     </div>
 
     <!-- 添加/编辑记录对话框 -->
@@ -378,6 +389,8 @@ const statisticRecords = ref(null)
 const hideSalary = ref(true)
 const hideNote = ref(true)
 const searchKeyword = ref('')
+const currentPage = ref(1)
+const pageSize = ref(20)
 
 const fullscreen = ref(false)
 
@@ -446,6 +459,11 @@ const filteredRecords = computed(() => {
   })
 })
 
+const paginatedRecords = computed(() => {
+  const start = (currentPage.value - 1) * pageSize.value
+  return filteredRecords.value.slice(start, start + pageSize.value)
+})
+
 const totalRecords = computed(() => {
   return records.value.length// - records.value.filter(record => record.result === '待投递').length
 })
@@ -486,11 +504,23 @@ onMounted(() => {
 // 监听路由变化
 watch(() => route.params.id, (newId) => {
   if (newId) {
+    currentPage.value = 1
     loadProgress()
   }
 })
 
 // 方法
+watch([searchKeyword, pageSize], () => {
+  currentPage.value = 1
+})
+
+watch(filteredRecords, (newRecords) => {
+  const maxPage = Math.max(1, Math.ceil(newRecords.length / pageSize.value))
+  if (currentPage.value > maxPage) {
+    currentPage.value = maxPage
+  }
+})
+
 const loadProgress = () => {
   loading.value = true
   setTimeout(() => {
@@ -848,6 +878,12 @@ const changeFullScreen = () => {
 .action-buttons {
   display: flex;
   gap: 8px;
+}
+
+.pagination-container {
+  display: flex;
+  justify-content: flex-end;
+  padding: 16px 8px 0;
 }
 
 :deep(.el-table) .row-class-name-offer {
