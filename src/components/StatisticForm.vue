@@ -1,6 +1,16 @@
 <template>
   <div class="statistic-form">
     <div ref="chartRef" class="chart-container"></div>
+    <div v-if="currentStats.length > 0" class="statistic-stats">
+      <div
+          v-for="item in currentStats"
+          :key="item.name"
+          class="statistic-stat-item"
+      >
+        <span class="statistic-stat-label">{{ item.name }}</span>
+        <span class="statistic-stat-value">{{ item.value }}</span>
+      </div>
+    </div>
     <div class="form-actions">
       <el-button type="primary" @click="handleSubmit">确定</el-button>
     </div>
@@ -8,16 +18,19 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, watch, nextTick } from 'vue'
+import { ref, onMounted, onUnmounted, watch, nextTick, computed } from 'vue'
 import * as echarts from 'echarts';
 
 const emit = defineEmits(['submit'])
 
 const props = defineProps({
   chartData: {
-    type: Array,
+    type: Object,
     required: true,
-    default: () => []
+    default: () => ({
+      pieData: [],
+      stats: []
+    })
   },
   title: {
     type: String,
@@ -37,6 +50,10 @@ const props = defineProps({
 const chartRef = ref(null);
 let chartInstance = null;
 const containerReady = ref(false);
+
+const currentStats = computed(() => {
+  return props.chartData?.stats || []
+})
 
 // 等待容器准备就绪的辅助函数
 const waitForContainerReady = () => {
@@ -74,7 +91,8 @@ const initOrUpdateChart = async () => {
   }
 
   // 如果没有数据，显示空状态
-  if (!props.chartData || props.chartData.length === 0) {
+  const hasPieData = (props.chartData?.pieData || []).length > 0
+  if (!hasPieData) {
     console.warn('没有图表数据');
     if (chartInstance) {
       chartInstance.clear();
@@ -143,10 +161,10 @@ const initOrUpdateChart = async () => {
           labelLine: {
             show: true
           },
-          data: props.chartData
+          data: props.chartData.pieData
         }
       ]
-    };
+    }
 
     // 使用配置项绘制图表
     chartInstance.setOption(option);
@@ -233,6 +251,37 @@ const handleSubmit = async () => {
   margin: 0;
   padding: 0;
   position: relative;
+}
+
+.statistic-stats {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+  flex-shrink: 0;
+}
+
+.statistic-stat-item {
+  border: 1px solid #e4e7ed;
+  border-radius: 6px;
+  padding: 12px;
+  background: #fafafa;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: center;
+}
+
+.statistic-stat-label {
+  color: #606266;
+  font-size: 13px;
+  text-align: center;
+}
+
+.statistic-stat-value {
+  color: #303133;
+  font-size: 24px;
+  font-weight: 600;
 }
 
 .form-actions {

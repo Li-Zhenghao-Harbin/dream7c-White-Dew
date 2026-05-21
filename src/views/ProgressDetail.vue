@@ -288,6 +288,7 @@
       <StatisticForm
           v-if="showStatisticDialog"
           :chartData="statisticRecords"
+          title="状态分布"
           @submit="handleStatisticSubmit"
       />
     </el-dialog>
@@ -456,7 +457,10 @@ const showStageDialog = ref(false)
 const showStatisticDialog = ref(false)
 const showInterviewOverviewDialog = ref(false)
 const currentStage = ref(null)
-const statisticRecords = ref(null)
+const statisticRecords = ref({
+  pieData: [],
+  stats: []
+})
 
 const hideSalary = ref(true)
 const hideNote = ref(true)
@@ -868,21 +872,30 @@ const handleStageSubmit = () => {
 }
 
 const viewStatistic = () => {
-  // 预处理饼图数据
-  let resultCount = {};
+  const resultCount = {};
   records.value.forEach(item => {
     const result = item?.result || '未知';
-    // 统计数量
     if (resultCount[result]) {
       resultCount[result] += 1;
     } else {
       resultCount[result] = 1;
     }
   });
-  statisticRecords.value = Object.keys(resultCount).map(result => ({
+
+  const pieData = Object.keys(resultCount).map(result => ({
     name: result,
     value: resultCount[result]
   }));
+
+  const orderedStats = store.resultOptions.map(name => ({
+    name,
+    value: resultCount[name] || 0
+  }))
+
+  statisticRecords.value = {
+    pieData,
+    stats: orderedStats
+  }
   showStatisticDialog.value = true
 }
 
