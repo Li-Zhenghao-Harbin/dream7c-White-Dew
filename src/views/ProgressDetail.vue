@@ -151,6 +151,7 @@
           empty-text="暂无记录"
           :max-height="tableMaxHeight"
           :default-sort="{ prop: 'applyDate', order: 'ascending' }"
+          @sort-change="handleTableSortChange"
       >
 <!--        <el-table-column prop="companyName" label="公司名称" width="150" fixed />-->
         <el-table-column prop="companyName" label="公司名称" width="150" fixed>
@@ -467,6 +468,10 @@ const hideNote = ref(true)
 const searchKeyword = ref('')
 const currentPage = ref(1)
 const pageSize = ref(20)
+const tableSort = ref({
+  prop: 'applyDate',
+  order: 'ascending'
+})
 
 const fullscreen = ref(false)
 const interviewOverviewMode = ref('company')
@@ -551,9 +556,25 @@ const filteredRecords = computed(() => {
   })
 })
 
+const sortedRecords = computed(() => {
+  const sorted = [...filteredRecords.value]
+  const { prop, order } = tableSort.value
+
+  if (!prop || !order) {
+    return sorted
+  }
+
+  return sorted.sort((a, b) => {
+    const left = a?.[prop] || ''
+    const right = b?.[prop] || ''
+    const compareResult = String(left).localeCompare(String(right))
+    return order === 'ascending' ? compareResult : -compareResult
+  })
+})
+
 const paginatedRecords = computed(() => {
   const start = (currentPage.value - 1) * pageSize.value
-  return filteredRecords.value.slice(start, start + pageSize.value)
+  return sortedRecords.value.slice(start, start + pageSize.value)
 })
 
 const interviewOverviewItems = computed(() => {
@@ -670,6 +691,14 @@ watch(filteredRecords, (newRecords) => {
     currentPage.value = maxPage
   }
 })
+
+const handleTableSortChange = ({ prop, order }) => {
+  tableSort.value = {
+    prop: prop || 'applyDate',
+    order: order || 'ascending'
+  }
+  currentPage.value = 1
+}
 
 const loadProgress = () => {
   loading.value = true
