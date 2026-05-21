@@ -1,5 +1,5 @@
 <template>
-  <div class="progress-detail" v-loading="loading">
+  <div class="progress-detail" :class="{ 'is-fullscreen': fullscreen }" v-loading="loading">
     <!-- 头部 -->
     <div class="detail-header" v-if="!fullscreen">
       <div class="header-content">
@@ -149,7 +149,7 @@
           border
           size="large"
           empty-text="暂无记录"
-          :max-height="fullscreen ? 'calc(100vh - 100px)' : 'calc(100vh - 360px)'"
+          :max-height="tableMaxHeight"
           :default-sort="{ prop: 'applyDate', order: 'ascending' }"
       >
 <!--        <el-table-column prop="companyName" label="公司名称" width="150" fixed />-->
@@ -476,6 +476,15 @@ const interviewOverviewOptions = [
 ]
 const interviewCompanyKeyword = ref('')
 const expandedInterviewExperienceIds = ref([])
+
+const tableMaxHeight = computed(() => {
+  const hasPagination = filteredRecords.value.length > 0
+  if (fullscreen.value) {
+    return hasPagination ? 'calc(100vh - 140px)' : 'calc(100vh - 100px)'
+  }
+
+  return hasPagination ? 'calc(100vh - 392px)' : 'calc(100vh - 360px)'
+})
 
 // 过滤器选项
 const resultFilters = ref([
@@ -932,6 +941,10 @@ const changeFullScreen = () => {
   overflow-y: auto;
 }
 
+.progress-detail.is-fullscreen {
+  padding-top: 8px;
+}
+
 .detail-header {
   background-color: #88abda;
   color: white;
@@ -1072,7 +1085,16 @@ const changeFullScreen = () => {
 .pagination-container {
   display: flex;
   justify-content: flex-end;
-  padding: 16px 8px 0;
+  padding: 8px 8px 0;
+  min-height: 40px;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.progress-detail.is-fullscreen .pagination-container {
+  min-height: 40px;
+  padding-top: 6px;
+  padding-bottom: 0;
 }
 
 .interview-overview {

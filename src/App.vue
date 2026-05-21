@@ -64,7 +64,7 @@
       </el-config-provider>
 
 <!--      store-->
-      <div class="data-manager-container">
+      <div v-if="showAboutEntry" class="data-manager-container">
         <About />
       </div>
     </el-container>
@@ -218,6 +218,10 @@ const activeMenu = computed(() => {
   return route.path
 })
 
+const showAboutEntry = computed(() => {
+  return route.path === '/'
+})
+
 // 处理菜单选择
 const handleMenuSelect = (index) => {
   router.push(index)
@@ -244,7 +248,7 @@ const showAbout = () => {
 .data-manager-container {
   position: fixed;
   bottom: 20px;
-  right: 20px;
+  left: 20px;
   z-index: 1000;
 }
 
