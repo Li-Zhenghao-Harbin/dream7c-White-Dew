@@ -172,7 +172,7 @@
         <el-input
             v-model="experienceContent"
             type="textarea"
-            :rows="8"
+            :rows="20"
             maxlength="20000"
             show-word-limit
             placeholder="记录面试题、回答思路、复盘总结、注意事项等"
