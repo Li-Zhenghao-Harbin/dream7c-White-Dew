@@ -152,6 +152,7 @@
           :max-height="tableMaxHeight"
           :default-sort="{ prop: 'applyDate', order: 'ascending' }"
           @sort-change="handleTableSortChange"
+          @filter-change="handleTableFilterChange"
       >
 <!--        <el-table-column prop="companyName" label="公司名称" width="150" fixed />-->
         <el-table-column prop="companyName" label="公司名称" width="150" fixed>
@@ -193,10 +194,12 @@
 
         <el-table-column
             prop="result"
+            column-key="result"
             label="状态"
             width="100"
             fixed="right"
             :filters="resultFilters"
+            :filtered-value="activeResultFilters"
             :filter-method="filterResult"
             filter-placement="bottom-end"
         >
@@ -423,6 +426,7 @@ import { useRecruitmentStore } from '../store'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import RecordForm from '../components/RecordForm.vue'
 import StageForm from "@/components/StageForm.vue";
+import { filterSortAndPaginateRecords } from '../utils/recordsPagination.mjs'
 import {
   ArrowLeft,
   Folder,
@@ -468,6 +472,7 @@ const hideNote = ref(true)
 const searchKeyword = ref('')
 const currentPage = ref(1)
 const pageSize = ref(20)
+const activeResultFilters = ref([])
 const tableSort = ref({
   prop: 'applyDate',
   order: 'ascending'
@@ -537,45 +542,21 @@ const records = computed(() => {
   return store.getProgressRecords(progressId)
 })
 
-const filteredRecords = computed(() => {
-  if (!searchKeyword.value.trim()) {
-    return records.value
-  }
-
-  const keyword = searchKeyword.value.toLowerCase().trim()
-
-  return records.value.filter(record => {
-    // 搜索多个字段
-    return (
-        (record.companyName && record.companyName.toLowerCase().includes(keyword)) ||
-        (record.industry && record.industry.toLowerCase().includes(keyword)) ||
-        (record.city && record.city.toLowerCase().includes(keyword)) ||
-        (record.position && record.position.toLowerCase().includes(keyword)) ||
-        (record.note && record.note.toLowerCase().includes(keyword))
-    )
+const tableRecords = computed(() => {
+  return filterSortAndPaginateRecords(records.value, {
+    keyword: searchKeyword.value,
+    resultFilters: activeResultFilters.value,
+    sort: tableSort.value,
+    currentPage: currentPage.value,
+    pageSize: pageSize.value
   })
 })
 
-const sortedRecords = computed(() => {
-  const sorted = [...filteredRecords.value]
-  const { prop, order } = tableSort.value
+const filteredRecords = computed(() => tableRecords.value.filteredRecords)
 
-  if (!prop || !order) {
-    return sorted
-  }
+const sortedRecords = computed(() => tableRecords.value.sortedRecords)
 
-  return sorted.sort((a, b) => {
-    const left = a?.[prop] || ''
-    const right = b?.[prop] || ''
-    const compareResult = String(left).localeCompare(String(right))
-    return order === 'ascending' ? compareResult : -compareResult
-  })
-})
-
-const paginatedRecords = computed(() => {
-  const start = (currentPage.value - 1) * pageSize.value
-  return sortedRecords.value.slice(start, start + pageSize.value)
-})
+const paginatedRecords = computed(() => tableRecords.value.records)
 
 const interviewOverviewItems = computed(() => {
   const currentProgressId = String(progressId)
@@ -681,7 +662,7 @@ watch(() => route.params.id, (newId) => {
 })
 
 // 方法
-watch([searchKeyword, pageSize], () => {
+watch([searchKeyword, pageSize, activeResultFilters], () => {
   currentPage.value = 1
 })
 
@@ -697,6 +678,11 @@ const handleTableSortChange = ({ prop, order }) => {
     prop: prop || 'applyDate',
     order: order || 'ascending'
   }
+  currentPage.value = 1
+}
+
+const handleTableFilterChange = (filters) => {
+  activeResultFilters.value = filters?.result || []
   currentPage.value = 1
 }
 
